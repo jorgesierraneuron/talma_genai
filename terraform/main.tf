@@ -9,11 +9,6 @@ module "ecr" {
   repo_name = var.ecr_repo_name
 }
 
-# Cola SQS
-module "sqs" {
-  source       = "./modules/sqs"
-  queue_name   = var.sqs_queue_name
-}
 
 # Rol IAM para Lambda
 module "iam" {
@@ -22,27 +17,22 @@ module "iam" {
 }
 
 # Lambda Clean Files
-module "lambda_clean_files" {
+module "lambda_rethrieve_qa" {
   source        = "./modules/lambda"
-  function_name = var.clean_files_function_name
+  function_name = var.rethrieve_qa_name
   iam_role_arn  = module.iam.lambda_role_arn
-  image_uri     = "${module.ecr.repository_url}:clean-files"
-  timeout       = var.clean_files_timeout
-  environment = {
-    SQS_QUEUE_URL = module.sqs.queue_url
-  }
+  image_uri     = "${module.ecr.repository_url}:rethrieve_qa_${var.environment}"
+  timeout       = var.rethrieve_qa_timeout
 }
 
 # Lambda Convert JSON to Knowledgebase
-module "lambda_convert_json" {
+module "lambda_json_to_knowledge" {
   source        = "./modules/lambda"
-  function_name = var.convert_json_function_name
+  function_name = var.json_to_knowledge_name
   iam_role_arn  = module.iam.lambda_role_arn
-  image_uri     = "${module.ecr.repository_url}:convert-json"
-  timeout       = var.convert_json_timeout
+  image_uri     = "${module.ecr.repository_url}:json_to_knowledge_${var.environment}"
+  timeout       = var.json_to_knowledge_timeout
   environment = {
     NEO4J_URL = var.neo4j_url
   }
-  sqs_arn        = module.sqs.queue_arn
-  sqs_batch_size = var.convert_json_sqs_batch_size
 }

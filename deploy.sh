@@ -1,44 +1,68 @@
 #!/bin/bash
+set -e
 
-# Variables
-AWS_REGION="us-east-1" # Cambia esto a tu región
-AWS_ACCOUNT_ID="<account_id>" # Reemplaza con tu ID de cuenta AWS
-ECR_REPO_NAME="lambda-container-repo" # Nombre del repositorio ECR
-TERRAFORM_DIR="." # Directorio donde están los archivos de Terraform
+# Configuración
+ENV="dev"
+AWS_REGION="us-east-1"
+ECR_REPO_NAME="lambda-container-repo"
+DOCKER_TAG_RETHRIEVE_QA="rethrieve_qa_${ENV}"
+DOCKER_TAG_JSON_TO_KNOWLEDGE="json_to_knowledge_${ENV}"
 
-# Imágenes
-IMAGES=("clean-files" "convert-json")
 
-# Login en ECR
-echo "Autenticando Docker en ECR..."
-aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+# Retrieve AWS account ID
+ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
 
-# Crear repositorio ECR si no existe
-echo "Creando el repositorio ECR si no existe..."
-aws ecr describe-repositories --repository-names $ECR_REPO_NAME --region $AWS_REGION >/dev/null 2>&1 || \
-aws ecr create-repository --repository-name $ECR_REPO_NAME --region $AWS_REGION
+if [ -z "$ACCOUNT_ID" ]; then
+  echo "Error: No se pudo obtener el AWS Account ID. Verifica tus credenciales de AWS."
+  exit 1
+fi
 
-# Construir y subir imágenes
-for IMAGE in "${IMAGES[@]}"; do
-    echo "Construyendo la imagen Docker para $IMAGE..."
-    docker build -t $IMAGE ./$IMAGE
+ECR_URL="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}"
 
-    echo "Etiquetando la imagen $IMAGE..."
-    docker tag $IMAGE:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:$IMAGE
+# 1. Construir y subir imágenes a ECR
+function upload_to_ecr() {
+  echo "Autenticando con ECR..."
+  aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 
-    echo "Subiendo la imagen $IMAGE a ECR..."
-    docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:$IMAGE
-done
+  #aws ecr create-repository --repository-name lambda-container-repo --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE --region $AWS_REGION
 
-# Desplegar Terraform
-echo "Inicializando Terraform..."
-cd $TERRAFORM_DIR
-terraform init
 
-echo "Revisando el plan de Terraform..."
-terraform plan
+  echo "Construyendo imagen para rethriever_qa..."
+  docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA ./lambda_source/rethrieve_qa
+  docker tag $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA"
+  docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA"  
 
-echo "Aplicando Terraform para desplegar la infraestructura..."
-terraform apply -auto-approve
+  echo "Arquitectura lambda.."
+  docker inspect --format '{{.Architecture}}' $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA"
 
-echo "Despliegue completado exitosamente 🚀"
+
+  echo "Construyendo imagen para json_to_knowledge..."
+  docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE ./lambda_source/json_to_knowledge
+  docker tag $ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE"
+  docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE"
+
+}
+
+
+
+# 2. Desplegar Terraform
+function deploy_terraform() {
+  echo "Inicializando Terraform..."
+  cd ./terraform || { echo "Error: No se pudo acceder al directorio ./terraform"; exit 1; }
+
+  echo "Ejecutando terraform init..."
+  terraform init || { echo "Error: terraform init falló"; exit 1; }
+
+  echo "Ejecutando terraform plan..."
+  terraform plan -out=tfplan || { echo "Error: terraform plan falló"; exit 1; }
+
+  echo "Aplicando infraestructura con terraform apply..."
+  terraform apply -auto-approve tfplan || { echo "Error: terraform apply falló"; exit 1; }
+
+  cd - || { echo "Error: No se pudo volver al directorio anterior"; exit 1; }
+}
+
+
+# Ejecutar
+upload_to_ecr
+deploy_terraform

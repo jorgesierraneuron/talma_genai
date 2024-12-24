@@ -4,24 +4,15 @@ output "ecr_repository_url" {
   value       = module.ecr.repository_url
 }
 
-# Salidas de la cola SQS
-output "sqs_queue_url" {
-  description = "URL de la cola SQS"
-  value       = module.sqs.queue_url
-}
 
-output "sqs_queue_arn" {
-  description = "ARN de la cola SQS"
-  value       = module.sqs.queue_arn
-}
 
 # Salidas de las funciones Lambda
-output "lambda_clean_files_name" {
-  description = "Nombre de la función Lambda para clean-files"
-  value       = module.lambda_clean_files.lambda_function_name
+output "lambda_rethrieve_qa" {
+  description = "Nombre de la función Lambda para traer información de neo4j"
+  value       = module.lambda_rethrieve_qa.lambda_function_name
 }
 
-output "lambda_convert_json_name" {
-  description = "Nombre de la función Lambda para convertir JSON"
-  value       = module.lambda_convert_json.lambda_function_name
+output "lambda_json_to_knowledge" {
+  description = "Nombre de la función Lambda para crear el Knowledgebase"
+  value       = module.lambda_json_to_knowledge.lambda_function_name
 }

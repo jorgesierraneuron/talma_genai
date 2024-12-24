@@ -5,6 +5,13 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
+variable "environment" {
+  description = "Ambiente de despliegue"
+  type        = string
+  default     = "dev"
+}
+
+
 # Nombre del repositorio ECR
 variable "ecr_repo_name" {
   description = "Nombre del repositorio ECR"
@@ -12,12 +19,6 @@ variable "ecr_repo_name" {
   default     = "lambda-container-repo"
 }
 
-# Nombre de la cola SQS
-variable "sqs_queue_name" {
-  description = "Nombre de la cola SQS"
-  type        = string
-  default     = "lambda-trigger-queue"
-}
 
 # Nombre del rol IAM para Lambda
 variable "lambda_role_name" {
@@ -27,35 +28,29 @@ variable "lambda_role_name" {
 }
 
 # Configuración de Lambda Clean Files
-variable "clean_files_function_name" {
-  description = "Nombre de la función Lambda para clean-files"
+variable "rethrieve_qa_name" {
+  description = "Nombre de la función Lambda para rethrieve_qa"
   type        = string
-  default     = "clean_files_lambda"
+  default     = "rethrieve_qa"
 }
 
-variable "clean_files_timeout" {
+variable "rethrieve_qa_timeout" {
   description = "Tiempo máximo de ejecución para clean-files Lambda"
   type        = number
   default     = 120
 }
 
 # Configuración de Lambda Convert JSON
-variable "convert_json_function_name" {
+variable "json_to_knowledge_name" {
   description = "Nombre de la función Lambda para convertir JSON"
   type        = string
-  default     = "convert_json_lambda"
+  default     = "json_to_knowledge"
 }
 
-variable "convert_json_timeout" {
+variable "json_to_knowledge_timeout" {
   description = "Tiempo máximo de ejecución para convert-json Lambda"
   type        = number
   default     = 180
-}
-
-variable "convert_json_sqs_batch_size" {
-  description = "Tamaño del lote de mensajes para la función convert-json Lambda"
-  type        = number
-  default     = 5
 }
 
 # URL de la base de datos Neo4j

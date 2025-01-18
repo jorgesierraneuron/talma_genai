@@ -1,18 +1,22 @@
-import json
-import pandas as pd
+from fastapi import FastAPI, HTTPException
+from mangum import Mangum
+from app.models import SimilarityRequest
+from app.utils import search_filtered, search_unfiltered
 
-def handler(event, context):
-    """
-    A simple AWS Lambda function example.
-    """
-    # Extract name from the event
-    name = event.get('name', 'From QA')
-    
-    # Create a response
-    response = {
-        "statusCode": 200,
-        "body": json.dumps({
-            "message": f"Hello, {name}!"
-        })
-    }
-    return response
+app = FastAPI()
+
+@app.get("/similarity_search_filtered")
+def similarity_search_filtered(request: SimilarityRequest):
+    try:
+        return search_filtered(request.descripcion_hallazgo)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error en la búsqueda con filtro: {str(e)}")
+
+@app.get("/similarity_search_unfiltered")
+def similarity_search_unfiltered(request: SimilarityRequest):
+    try:
+        return search_unfiltered(request.descripcion_hallazgo)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error en la búsqueda sin filtro: {str(e)}")
+
+handler = Mangum(app)

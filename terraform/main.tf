@@ -36,3 +36,13 @@ module "lambda_json_to_knowledge" {
     NEO4J_URL = var.neo4j_url
   }
 }
+
+
+module "api_gateway_talmagenai" {
+  source = "./modules/api_gateway"
+
+  api_gateway_name   = "gateway_talmagenai"
+  aws_region         = "us-east-1"
+  lambda_function_name = var.rethrieve_qa_name
+  aws_account_id     = "242201272670"
+}

@@ -17,7 +17,7 @@ app.add_middleware(
 
 handler = Mangum(app)
 
-@app.get("/similarity_search_filtered")
+@app.post("/similarity_search_filtered")
 def similarity_search_filtered(request: SimilarityRequest):
     try:
         
@@ -37,7 +37,7 @@ def similarity_search_filtered(request: SimilarityRequest):
         raise HTTPException(status_code=500, detail=f"Error en la búsqueda con filtro: {str(e)}")
 
 
-@app.get("/similarity_search_unfiltered")
+@app.post("/similarity_search_unfiltered")
 def similarity_search_unfiltered(request: SimilarityRequest):
     try:
     

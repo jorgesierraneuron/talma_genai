@@ -1,5 +1,9 @@
 import re
 from app.connections import get_vector_store
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts import ChatPromptTemplate
+from app.config import openai_api_key
+
 
 def extraer_codigo_y_cliente(texto):
     """
@@ -83,3 +87,82 @@ def search_unfiltered(descripcion_hallazgo):
             for res in result
         ]
     }
+
+def generate_cause_analysis(first_element, descripcion_hallazgo):
+    """
+    Genera un análisis de causa utilizando el método de los 5 Porqués basado en ejemplos previos.
+    
+    Parámetros:
+    - first_element (str): Ejemplos previos de análisis de causa para eventos similares.
+    - descripcion_hallazgo (str): Descripción detallada del evento nuevo.
+    - openai_api_key (str): Clave API para acceder al modelo OpenAI.
+    
+    Retorna:
+    - str: La respuesta generada por el modelo con el análisis de causa.
+    """
+
+    # Configuración del modelo LLM
+    llm = ChatOpenAI(
+        model="gpt-4o-mini",
+        api_key=openai_api_key,
+        max_tokens=2000,
+        temperature=0.1
+    )
+
+    # Definir el template de prompt
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            (
+                "system",
+                """
+                A continuación, se presentan ejemplos previos de análisis de causa realizados utilizando el método de los 5 Porqués para eventos similares dentro de la misma operación. 
+                Estos ejemplos incluyen análisis detallados que contienen múltiples campos relevantes para proporcionar contexto específico sobre el proceso, los factores contribuyentes y las lecciones aprendidas:
+
+                Ejemplos previos:
+                {ejemplos_similares}
+
+                Utilizando esta información como referencia, realiza un análisis de causa para el siguiente evento nuevo, aplicando el método de los 5 Porqués y asegurándote de basar cada respuesta específicamente en la descripción del evento proporcionada.
+
+                Evento: {descripcion_hallazgo}
+
+                Instrucciones específicas:
+                Realiza un análisis de causa utilizando exactamente cinco porqués, asegurándote de que cada uno esté directamente relacionado con la descripción del evento y las posibles causas asociadas.
+                Redacta el análisis de forma estructurada, proporcionando explicaciones claras y concisas para cada porqué.
+                Integra posibles fallas en procedimientos, coordinación, comunicación, herramientas o recursos humanos siempre que sean relevantes para el evento descrito.
+                Asegúrate de que las respuestas sean lógicas y progresivas, explorando cada nivel de causa hasta llegar a la raíz del problema.
+                Concluye con un breve resumen de las causas principales identificadas y, si es necesario, incluye recomendaciones para evitar que este tipo de eventos se repita.
+                Formato esperado para el análisis:
+
+                Evento: {descripcion_hallazgo}
+
+                Por qué 1: [Primera causa directa basada en la descripción del evento.]
+                Por qué 2: [Causa más profunda que explique la razón detrás del primer porqué.]
+                Por qué 3: [Tercer nivel de análisis, conectado con el segundo porqué.]
+                Por qué 4: [Cuarta causa, vinculada al nivel anterior.]
+                Por qué 5: [Causa raíz última, relacionada directamente con el evento.]
+                Conclusión: [Síntesis de las causas principales y recomendaciones relevantes.]
+                Nota: Cada porqué debe derivarse directamente del contexto y la descripción del evento proporcionado. Si es útil, utiliza patrones o lecciones aprendidas de los ejemplos previos, pero ajusta las causas al caso específico,
+                limitate solo a responder los porqué y la Conclusión.
+                """
+            ),
+            (
+                "human",
+                "{ejemplos_similares}\nEvento: {descripcion_hallazgo}",
+            ),
+        ]
+    )
+
+    # Crear la cadena combinando el modelo y el prompt
+    chain = prompt | llm
+
+    # Ejecutar la invocación
+    response = chain.invoke(
+        {
+            "ejemplos_similares": first_element,  
+            "descripcion_hallazgo": descripcion_hallazgo 
+        }
+    )
+
+    # Devolver la respuesta generada
+    return response.content
+

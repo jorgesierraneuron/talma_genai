@@ -125,7 +125,7 @@ paths = ["curated/calidad/PROCESADO listado_procesos750050369.csv",
 
 path_aux = "curated/calidad/PROCESADO Reporte de Accion SAC Multisede Dec 20 2024.csv"
 
-def lambda_handler(event, context):
+def handler(event, context):
 
     try:
 

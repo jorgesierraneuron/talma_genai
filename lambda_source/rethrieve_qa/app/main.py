@@ -3,8 +3,18 @@ from fastapi import FastAPI, HTTPException
 from mangum import Mangum
 from models import SimilarityRequest
 from utils import search_filtered, search_unfiltered, generate_cause_analysis
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+handler = Mangum(app)
 
 @app.get("/similarity_search_filtered")
 def similarity_search_filtered(request: SimilarityRequest):
@@ -45,4 +55,3 @@ def similarity_search_unfiltered(request: SimilarityRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error en la búsqueda sin filtro: {str(e)}")
 
-handler = Mangum(app)

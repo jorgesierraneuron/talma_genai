@@ -142,7 +142,7 @@ def generate_cause_analysis(first_element, descripcion_hallazgo):
                 Por qué 5: [Causa raíz última, relacionada directamente con el evento.]
                 Conclusión: [Síntesis de las causas principales y recomendaciones relevantes.]
                 Nota: Cada porqué debe derivarse directamente del contexto y la descripción del evento proporcionado. Si es útil, utiliza patrones o lecciones aprendidas de los ejemplos previos, pero ajusta las causas al caso específico,
-                limitate solo a responder los porqué y la Conclusión.
+                limitate solo a la estructura definida anteriormente de evento , los Por qué y la Conclusión.
                 """
             ),
             (

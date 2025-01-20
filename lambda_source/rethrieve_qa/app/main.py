@@ -1,8 +1,8 @@
 import json
 from fastapi import FastAPI, HTTPException
 from mangum import Mangum
-from app.models import SimilarityRequest
-from app.utils import search_filtered, search_unfiltered, generate_cause_analysis
+from models import SimilarityRequest
+from utils import search_filtered, search_unfiltered, generate_cause_analysis
 
 app = FastAPI()
 

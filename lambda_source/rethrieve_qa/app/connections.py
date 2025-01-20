@@ -1,6 +1,6 @@
 from langchain_community.vectorstores import Neo4jVector
 from langchain_openai import OpenAIEmbeddings
-from app.config import neo4j_url, neo4j_username, neo4j_passwd, openai_api_key, index_name, text_node_property
+from config import neo4j_url, neo4j_username, neo4j_passwd, openai_api_key, index_name, text_node_property
 
 def get_vector_store(retrieval_query=None):
     """

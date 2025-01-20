@@ -1,8 +1,8 @@
 import re
-from app.connections import get_vector_store
+from connections import get_vector_store
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-from app.config import openai_api_key
+from config import openai_api_key
 
 
 def extraer_codigo_y_cliente(texto):

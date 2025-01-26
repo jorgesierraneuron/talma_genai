@@ -5,6 +5,7 @@ import uvicorn
 from models import SimilarityRequest
 from utils import search_filtered, search_unfiltered, generate_cause_analysis, apply_feedback
 from fastapi.middleware.cors import CORSMiddleware
+from vision_rag import VisionRAG
 
 app = FastAPI()
 
@@ -17,11 +18,17 @@ app.add_middleware(
 
 handler = Mangum(app)
 
+vision_rag = VisionRAG()
+
 @app.post("/similarity_search_filtered")
 def similarity_search_filtered(request: SimilarityRequest):
     try:
         print("Búsqueda de Similaridad")
         result = search_filtered(request.descripcion_hallazgo)
+
+        manuales_info = vision_rag.run(request.descripcion_hallazgo)
+
+        print(f"info manuales: {manuales_info}")
         
         if "resultados_de_busqueda" not in result or not result["resultados_de_busqueda"]:
             return {"mensaje": "No se encontraron resultados similares con los filtros aplicados."}

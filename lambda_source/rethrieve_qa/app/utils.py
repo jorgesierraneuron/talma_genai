@@ -4,18 +4,48 @@ from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from config import openai_api_key
 
-
 def extraer_codigo_y_cliente(texto):
     """
     Extrae el código de aeropuerto y nombre del cliente desde un texto.
+    Si ocurre un error, maneja la excepción y devuelve None para ambos campos.
+    Además, maneja casos especiales como "Jet Smart" o "Viva Air", y devuelve todo en mayúsculas.
     """
-    codigo_aeropuerto = re.search(r'aeropuerto\s+(\w+)', texto, re.IGNORECASE)
-    nombre_cliente = re.search(r'cliente\s+([\w\s-]+)', texto, re.IGNORECASE)
+    try:
+        # Buscar el código de aeropuerto (lo que está entre "aeropuerto" y "y")
+        codigo_aeropuerto = re.search(r'aeropuerto\s+(\w+)\s+y', texto, re.IGNORECASE)
+        if codigo_aeropuerto:
+            codigo_aeropuerto = codigo_aeropuerto.group(1).strip().upper()  # Elimina cualquier espacio extra y pasa a mayúsculas
+        else:
+            codigo_aeropuerto = None
 
-    codigo_aeropuerto = codigo_aeropuerto.group(1).strip() if codigo_aeropuerto else None
-    nombre_cliente = nombre_cliente.group(1).strip().upper() if nombre_cliente else None
+        # Casos especiales de nombres de clientes (Jet Smart, Viva Air)
+        nombres_especiales = ["Jet Smart", "Viva Air"]
+        nombre_cliente = None
 
-    return codigo_aeropuerto, nombre_cliente
+        for nombre in nombres_especiales:
+            if nombre.lower() in texto.lower():
+                nombre_cliente = nombre
+                break
+        
+        if not nombre_cliente:
+            # Buscar el nombre del cliente (lo que está entre "cliente" y la primera palabra siguiente)
+            nombre_cliente = re.search(r'cliente\s+([\w\s-]+?)(?=\s+\w|$)', texto, re.IGNORECASE)
+            if nombre_cliente:
+                nombre_cliente = nombre_cliente.group(1).strip().replace(" ", "").upper()  # Elimina los espacios y pasa a mayúsculas
+            else:
+                nombre_cliente = None
+
+        # Convertir ambos valores a mayúsculas
+        if codigo_aeropuerto:
+            codigo_aeropuerto = codigo_aeropuerto.upper()
+        if nombre_cliente:
+            nombre_cliente = nombre_cliente.upper()
+
+        return codigo_aeropuerto, nombre_cliente
+
+    except Exception as e:
+        print(f"Ocurrió un error: {e}")
+        return None, None
 
 def search_filtered(descripcion_hallazgo):
     """
@@ -164,5 +194,35 @@ def generate_cause_analysis(first_element, descripcion_hallazgo):
     )
 
     # Devolver la respuesta generada
+    return response.content
+
+def apply_feedback(original_response, feedback):
+    """
+    Aplica el feedback recibido a la respuesta generada.
+    
+    Parámetros:
+    - original_response (str): Respuesta original generada por el análisis de causa.
+    - feedback (str): Correcciones o mejoras sugeridas.
+    
+    Retorna:
+    - str: Respuesta corregida basada en el feedback.
+    """
+    llm = ChatOpenAI(
+        model="gpt-4o-mini",
+        api_key=openai_api_key,
+        max_tokens=2000,
+        temperature=0.1
+    )
+
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", "Corrige y mejora la siguiente respuesta basada en el feedback proporcionado: \nRespuesta Original: {original_response}\nFeedback: {feedback}\nEntrega una versión revisada y mejorada."),
+            ("human", "{original_response}\n{feedback}")
+        ]
+    )
+
+    chain = prompt | llm
+    response = chain.invoke({"original_response": original_response, "feedback": feedback})
+    
     return response.content
 

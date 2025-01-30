@@ -32,9 +32,6 @@ function upload_to_ecr() {
   docker tag $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA"
   docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA"  
 
-  echo "Arquitectura lambda.."
-  docker inspect --format '{{.Architecture}}' $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA"
-
 
   echo "Construyendo imagen para json_to_knowledge..."
   docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE ./lambda_source/json_to_knowledge

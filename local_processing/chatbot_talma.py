@@ -3,8 +3,8 @@ import requests
 
 # Configurar la API URL en AWS
 API_OPTIONS = {
-    "Análisis de Causa (Filtrado)": "",
-    "Análisis de Causa (Sin Filtro)": ""
+    "Análisis de Causa (Filtrado)": " ",
+    "Análisis de Causa (Sin Filtro)": " "
 }
 
 st.markdown("<h1 style='text-align: center;'>🤖 Chatbot de Análisis de Causa</h1>", unsafe_allow_html=True)

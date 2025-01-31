@@ -1,16 +1,9 @@
 import streamlit as st
 import requests
 
-# Configurar la API URL en AWS
-API_OPTIONS = {
-    "Análisis de Causa (Filtrado)": " ",
-    "Análisis de Causa (Sin Filtro)": " "
-}
+API_URL = " "
 
-st.markdown("<h1 style='text-align: center;'>🤖 Chatbot de Análisis de Causa</h1>", unsafe_allow_html=True)
-
-api_choice = st.selectbox("Seleccione el tipo de análisis a generar:", list(API_OPTIONS.keys()))
-API_URL = API_OPTIONS[api_choice]
+st.markdown("<h1 style='text-align: center;'>🤖 Chatbot Talma Reportes De Quejas</h1>", unsafe_allow_html=True)
 
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
@@ -40,16 +33,16 @@ if user_input:
         if response.status_code == 200:
             try:
                 response_data = response.json()  # Intentar convertir a JSON
-                cause_analysis = response_data.get("response", response_text)
+                analysis = response_data.get("respuesta", response_text)  
             except (ValueError, AttributeError):
-                cause_analysis = response_text  # Si no es JSON, usar el string plano
+                analysis = response_text  # Si no es JSON, usar el string plano
         else:
-            cause_analysis = f"Error en la API (Código {response.status_code}): {response_text}"
+            analysis = f"Error en la API (Código {response.status_code}): {response_text}"
         
-        st.session_state["last_response"] = cause_analysis
-        st.session_state["messages"].append({"role": "assistant", "content": cause_analysis})
+        st.session_state["last_response"] = analysis
+        st.session_state["messages"].append({"role": "assistant", "content": analysis})
         with st.chat_message("assistant"):
-            st.markdown(cause_analysis, unsafe_allow_html=True)
+            st.markdown(analysis, unsafe_allow_html=True)
 
 # Permitir que el usuario ingrese feedback y generar nuevas versiones iterativamente
 feedback = st.text_area("Si la respuesta no es satisfactoria, ingrese su feedback aquí:")
@@ -75,7 +68,7 @@ if submit_feedback and feedback and st.session_state["last_response"]:
         if feedback_response.status_code == 200:
             try:
                 feedback_data = feedback_response.json()  # Intentar convertir a JSON
-                improved_analysis = feedback_data.get("response", feedback_text)
+                improved_analysis = feedback_data.get("respuesta", feedback_text)  # Cambié 'cause_analysis' por 'improved_analysis'
             except (ValueError, AttributeError):
                 improved_analysis = feedback_text  # Si no es JSON, usar el string plano
         else:

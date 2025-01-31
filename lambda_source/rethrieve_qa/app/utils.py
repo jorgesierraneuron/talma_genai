@@ -118,17 +118,19 @@ def search_unfiltered(descripcion_hallazgo):
         ]
     }
 
-def generate_cause_analysis(first_element, descripcion_hallazgo):
+def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo):
     """
-    Genera un análisis de causa utilizando el método de los 5 Porqués basado en ejemplos previos.
+    Genera un análisis de causa utilizando el método de los 5 Porqués basado en ejemplos previos, 
+    y además genera un plan de acción para abordar las causas identificadas, basándose en planes de acción previos. 
+    Si no es necesario un plan de acción, el modelo avisará.
     
     Parámetros:
-    - first_element (str): Ejemplos previos de análisis de causa para eventos similares.
+    - first_element (str): Ejemplos previos de análisis de causa para eventos similares, incluyendo análisis y planes de acción.
     - descripcion_hallazgo (str): Descripción detallada del evento nuevo.
     - openai_api_key (str): Clave API para acceder al modelo OpenAI.
     
     Retorna:
-    - str: La respuesta generada por el modelo con el análisis de causa.
+    - str: La respuesta generada por el modelo con el análisis de causa y el plan de acción (si aplica).
     """
 
     # Configuración del modelo LLM
@@ -146,12 +148,12 @@ def generate_cause_analysis(first_element, descripcion_hallazgo):
                 "system",
                 """
                 A continuación, se presentan ejemplos previos de análisis de causa realizados utilizando el método de los 5 Porqués para eventos similares dentro de la misma operación. 
-                Estos ejemplos incluyen análisis detallados que contienen múltiples campos relevantes para proporcionar contexto específico sobre el proceso, los factores contribuyentes y las lecciones aprendidas:
+                Estos ejemplos incluyen análisis detallados que contienen múltiples campos relevantes, como las causas identificadas, así como los planes de acción implementados para corregir y prevenir los eventos. 
 
                 Ejemplos previos:
                 {ejemplos_similares}
 
-                Utilizando esta información como referencia, realiza un análisis de causa para el siguiente evento nuevo, aplicando el método de los 5 Porqués y asegurándote de basar cada respuesta específicamente en la descripción del evento proporcionada.
+                Utilizando estos ejemplos como referencia, realiza un análisis de causa para el siguiente evento nuevo, aplicando el método de los 5 Porqués y asegurándote de basar cada respuesta específicamente en la descripción del evento proporcionada.
 
                 Evento: {descripcion_hallazgo}
 
@@ -160,7 +162,19 @@ def generate_cause_analysis(first_element, descripcion_hallazgo):
                 Redacta el análisis de forma estructurada, proporcionando explicaciones claras y concisas para cada porqué.
                 Integra posibles fallas en procedimientos, coordinación, comunicación, herramientas o recursos humanos siempre que sean relevantes para el evento descrito.
                 Asegúrate de que las respuestas sean lógicas y progresivas, explorando cada nivel de causa hasta llegar a la raíz del problema.
-                Concluye con un breve resumen de las causas principales identificadas y, si es necesario, incluye recomendaciones para evitar que este tipo de eventos se repita.
+                Concluye con un breve resumen de las causas principales identificadas.
+
+                Luego, en función del análisis de causa, genera un plan de acción si es necesario. El plan de acción debe estar basado en los planes de acción de eventos previos (de los ejemplos previos), pero adaptado al evento actual. Si no es necesario un plan de acción debido a la naturaleza del evento, debes decirlo explícitamente.
+
+                El plan de acción debe incluir:
+
+                - Acciones correctivas inmediatas, si son necesarias.
+                - Propuestas de cambios en procedimientos o políticas, si son necesarias.
+                - Recomendaciones para mejorar la capacitación o recursos humanos, si son necesarias.
+                - Otras acciones relevantes para evitar la repetición del evento, si es necesario.
+
+                Si no se necesita un plan de acción (por ejemplo, porque el evento fue debido a causas externas que no pueden corregirse internamente), indica que no se requiere plan de acción y explica por qué.
+
                 Formato esperado para el análisis:
 
                 Evento: {descripcion_hallazgo}
@@ -170,9 +184,18 @@ def generate_cause_analysis(first_element, descripcion_hallazgo):
                 Por qué 3: [Tercer nivel de análisis, conectado con el segundo porqué.]
                 Por qué 4: [Cuarta causa, vinculada al nivel anterior.]
                 Por qué 5: [Causa raíz última, relacionada directamente con el evento.]
-                Conclusión: [Síntesis de las causas principales y recomendaciones relevantes.]
-                Nota: Cada porqué debe derivarse directamente del contexto y la descripción del evento proporcionado. Si es útil, utiliza patrones o lecciones aprendidas de los ejemplos previos, pero ajusta las causas al caso específico,
-                limitate solo a la estructura definida anteriormente de evento , los Por qué y la Conclusión.
+                Conclusión: [Síntesis de las causas principales identificadas y recomendaciones relevantes.]
+
+                Plan de acción:
+                [Si es necesario]
+                1. [Acción correctiva inmediata 1 basada en el ejemplo previo.]
+                2. [Acción correctiva inmediata 2 basada en el ejemplo previo.]
+                3. [Cambio en procedimientos, si es necesario, basado en los ejemplos previos.]
+                4. [Recomendaciones para mejorar capacitación o recursos humanos basadas en ejemplos previos.]
+                5. [Acciones adicionales para prevenir la repetición del evento basadas en lo aprendido previamente.]
+
+                [Si NO es necesario el plan de acción]
+                No se requiere un plan de acción porque el evento fue causado por [explicación detallada de por qué no se necesita un plan de acción].
                 """
             ),
             (
@@ -196,12 +219,13 @@ def generate_cause_analysis(first_element, descripcion_hallazgo):
     # Devolver la respuesta generada
     return response.content
 
+
 def apply_feedback(original_response, feedback):
     """
-    Aplica el feedback recibido a la respuesta generada.
+    Aplica el feedback recibido a la respuesta generada, tanto al análisis de causa como al plan de acción.
     
     Parámetros:
-    - original_response (str): Respuesta original generada por el análisis de causa.
+    - original_response (str): Respuesta original generada por el análisis de causa y el plan de acción.
     - feedback (str): Correcciones o mejoras sugeridas.
     
     Retorna:
@@ -216,7 +240,29 @@ def apply_feedback(original_response, feedback):
 
     prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", "Corrige y mejora la siguiente respuesta basada en el feedback proporcionado: \nRespuesta Original: {original_response}\nFeedback: {feedback}\nEntrega una versión revisada y mejorada."),
+            ("system", """
+                Tienes que corregir y mejorar la siguiente respuesta que incluye un análisis de causa y un plan de acción siguiendo estas instrucciones:
+                
+                - Mantén el formato de la respuesta con la siguiente estructura, respetando la numeración exacta:
+                  Evento:
+                  Por qué 1:
+                  Por qué 2:
+                  Por qué 3:
+                  Por qué 4:
+                  Por qué 5:
+                  Conclusión:
+                  Plan de acción:
+                  (Si no es necesario plan de acción, indica explícitamente que no se requiere un plan y explica por qué.)
+
+                - Si el feedback solo menciona cambios en un "Por qué" específico, solo modifica esa parte y deja los demás "Por qué" sin cambios.
+                - Si el feedback menciona cambios en el "Plan de acción", aplica los cambios solo a esa sección, sin modificar el análisis de causa.
+                - Si se menciona una modificación para la conclusión, modifícala según las sugerencias, sin alterar el resto del análisis o plan.
+                - Si no se mencionan cambios para un "Por qué" o para el plan de acción, no los modifiques.
+                - Asegúrate de respetar el orden y estructura sin agregar o eliminar elementos. No agregues nueva información si no se menciona en el feedback.
+
+                Respuesta Original: {original_response}
+                Feedback: {feedback}
+            """),
             ("human", "{original_response}\n{feedback}")
         ]
     )
@@ -225,4 +271,5 @@ def apply_feedback(original_response, feedback):
     response = chain.invoke({"original_response": original_response, "feedback": feedback})
     
     return response.content
+
 

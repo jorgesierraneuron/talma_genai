@@ -27,7 +27,7 @@ def similarity_search_unfiltered(request: SimilarityRequest):
             return {"mensaje": "No se encontraron resultados similares."}
         
         first_element = result["resultados_de_busqueda"][0]
-        print("Generación Análisis de Causas")
+        print("Generación Análisis de Causas y Plan de Accion")
         response = generate_cause_analysis_and_action_plan(first_element, request.descripcion_hallazgo)
         
         # Verificar si se proporciona feedback para realizar correcciones

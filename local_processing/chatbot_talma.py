@@ -85,14 +85,16 @@ if st.session_state["info_saved"] and not st.session_state["working_with_feedbac
                 st.session_state["working_with_feedback"] = True  # Ahora estamos trabajando con feedback
 
                 # Mostrar el botón de aceptación de la respuesta directamente
-                st.session_state["response_accepted"] = False  # Mantenerlo como "no aceptado" hasta que se confirme
-                feedback_accept = st.radio("¿Está de acuerdo con la respuesta?", ("Sí", "No"))
+                feedback_accept = st.radio("¿Está de acuerdo con la respuesta?", ("", "Sí", "No"), key="feedback_radio")
                 
+                # Si el usuario selecciona "Sí", marcamos la respuesta como aceptada
                 if feedback_accept == "Sí":
                     st.success("¡Reporte aceptado! Ahora puedes generar un nuevo reporte.")
                     st.session_state["info_saved"] = False  # Resetear estado para nuevo reporte
                     st.session_state["working_with_feedback"] = False  # Terminamos con el feedback
                     st.session_state["response_accepted"] = True  # Marcamos la respuesta como aceptada
+                    st.session_state["last_response"] = analysis  # Mantener la última respuesta aceptada
+                # Si el usuario selecciona "No", permitimos que dé feedback
                 elif feedback_accept == "No":
                     st.session_state["working_with_feedback"] = True  # Permitir feedback si se rechaza
                     st.info("Puedes seguir trabajando con el feedback o modificar tu descripción.")
@@ -136,7 +138,7 @@ if st.session_state["working_with_feedback"] and not st.session_state["response_
                 st.markdown(improved_analysis, unsafe_allow_html=True)
 
         # **Botón para aceptar o rechazar el feedback**
-        feedback_accept = st.radio("¿Está de acuerdo con la respuesta?", ("Sí", "No"))
+        feedback_accept = st.radio("¿Está de acuerdo con la respuesta?", ("", "Sí", "No"), key="feedback_radio")
 
         if feedback_accept == "Sí":
             st.success("¡Reporte aceptado! Ahora puedes generar un nuevo reporte.")

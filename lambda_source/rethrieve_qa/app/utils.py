@@ -97,9 +97,23 @@ def search_filtered(descripcion_hallazgo):
 
 def search_unfiltered(descripcion_hallazgo):
     """
-    Realiza una búsqueda de similaridad en toda la base de datos sin filtros.
+    Realiza una búsqueda de similaridad en toda la base de datos sin filtros,
+    incluyendo la información de los nodos relacionados.
     """
-    vector_store = get_vector_store()
+    vector_store = get_vector_store("""
+        MATCH (node:Incidente)
+        MATCH (node)-[:TIENE_ANALISIS]->(analisisCausa:AnalisisCausas)
+        MATCH (node)-[:TIENE_PLAN_DE_ACCION]->(planAccion:PlanAccion)
+        MATCH (node)-[:TIENE_CAUSA_RAIZ]->(causaRaiz:CausaRaiz)
+        RETURN
+            node.descripcion_hallazgo AS text,
+            score,
+            {
+                analisis_causa: analisisCausa.texto,
+                plan_de_accion: planAccion.texto,
+                causa_raiz: causaRaiz.texto
+            } AS metadata
+    """)
 
     result = vector_store.similarity_search(descripcion_hallazgo, k=3)
 
@@ -118,20 +132,23 @@ def search_unfiltered(descripcion_hallazgo):
         ]
     }
 
-def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo):
+def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo, causas_raiz_str):
     """
     Genera un análisis de causa utilizando el método de los 5 Porqués basado en ejemplos previos, 
-    y además genera un plan de acción para abordar las causas identificadas, basándose en planes de acción previos. 
-    Si no es necesario un plan de acción, el modelo avisará.
+    seleccionando la causa raíz más apropiada entre las posibles causas raíz pasadas como parámetro, 
+    y genera un plan de acción si es necesario.
     
     Parámetros:
-    - first_element (str): Ejemplos previos de análisis de causa para eventos similares, incluyendo análisis y planes de acción.
+    - first_element (dict): Diccionario con un solo ejemplo de análisis de causa para eventos similares.
     - descripcion_hallazgo (str): Descripción detallada del evento nuevo.
-    - openai_api_key (str): Clave API para acceder al modelo OpenAI.
+    - causas_raiz_str (str): Cadena de texto con causas raíz posibles, separadas por comas.
     
     Retorna:
     - str: La respuesta generada por el modelo con el análisis de causa y el plan de acción (si aplica).
     """
+    
+    # Convertir las causas raíz a una lista
+    causas_raiz = causas_raiz_str.split(',')
 
     # Configuración del modelo LLM
     llm = ChatOpenAI(
@@ -141,7 +158,10 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo)
         temperature=0.1
     )
 
-    # Definir el template de prompt
+    # Convertir el diccionario de first_element a una representación legible para el prompt
+    ejemplos_similares = "\n".join([f"{key}: {value}" for key, value in first_element.items()])
+
+    # Definir el template de prompt con formato más claro
     prompt = ChatPromptTemplate.from_messages(
         [
             (
@@ -150,43 +170,53 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo)
                 A continuación, se presentan ejemplos previos de análisis de causa realizados utilizando el método de los 5 Porqués para eventos similares dentro de la misma operación. 
                 Estos ejemplos incluyen análisis detallados que contienen múltiples campos relevantes, como las causas identificadas, así como los planes de acción implementados para corregir y prevenir los eventos. 
 
-                Ejemplos previos:
+                **Ejemplos previos**:
                 {ejemplos_similares}
 
                 Utilizando estos ejemplos como referencia, realiza un análisis de causa para el siguiente evento nuevo, aplicando el método de los 5 Porqués y asegurándote de basar cada respuesta específicamente en la descripción del evento proporcionada.
 
                 Evento: {descripcion_hallazgo}
 
+                A continuación, se listan algunas causas raíz posibles. Elige la que más se ajusta al análisis de causa generado para este evento. Solo selecciona una causa raíz de la lista siguiente:
+                {causas_raiz}
+
                 Instrucciones específicas:
-                Realiza un análisis de causa utilizando exactamente cinco porqués, asegurándote de que cada uno esté directamente relacionado con la descripción del evento y las posibles causas asociadas.
-                Redacta el análisis de forma estructurada, proporcionando explicaciones claras y concisas para cada porqué.
-                Integra posibles fallas en procedimientos, coordinación, comunicación, herramientas o recursos humanos siempre que sean relevantes para el evento descrito.
-                Asegúrate de que las respuestas sean lógicas y progresivas, explorando cada nivel de causa hasta llegar a la raíz del problema.
-                Concluye con un breve resumen de las causas principales identificadas.
+                1. **Siempre** incluye los ejemplos previos tal como están, bajo el título **"Ejemplos previos"**.
+                2. Realiza un análisis de causa utilizando exactamente cinco porqués, asegurándote de que cada uno esté directamente relacionado con la descripción del evento y las posibles causas asociadas.
+                3. Redacta el análisis de forma estructurada, proporcionando explicaciones claras y concisas para cada porqué.
+                4. Integra posibles fallas en procedimientos, coordinación, comunicación, herramientas o recursos humanos siempre que sean relevantes para el evento descrito.
+                5. Asegúrate de que las respuestas sean lógicas y progresivas, explorando cada nivel de causa hasta llegar a la raíz del problema.
+                6. Concluye con un breve resumen de las causas principales identificadas.
+                7. **Responde en el formato exacto proporcionado a continuación.**
 
-                Luego, en función del análisis de causa, genera un plan de acción si es necesario. El plan de acción debe estar basado en los planes de acción de eventos previos (de los ejemplos previos), pero adaptado al evento actual. Si no es necesario un plan de acción debido a la naturaleza del evento, debes decirlo explícitamente.
+                El formato de salida esperado es el siguiente:
 
-                El plan de acción debe incluir:
+                **Ejemplos previos:**
+                {ejemplos_similares}
 
-                - Acciones correctivas inmediatas, si son necesarias.
-                - Propuestas de cambios en procedimientos o políticas, si son necesarias.
-                - Recomendaciones para mejorar la capacitación o recursos humanos, si son necesarias.
-                - Otras acciones relevantes para evitar la repetición del evento, si es necesario.
+                **Evento:**
+                {descripcion_hallazgo}
 
-                Si no se necesita un plan de acción (por ejemplo, porque el evento fue debido a causas externas que no pueden corregirse internamente), indica que no se requiere plan de acción y explica por qué.
+                **Análisis de los 5 Porqués:**
 
-                Formato esperado para el análisis:
+                **Por qué 1:**
+                [Primera causa directa basada en la descripción del evento.]
+                **Por qué 2:**
+                [Causa más profunda que explique la razón detrás del primer porqué.]
+                **Por qué 3:**
+                [Tercer nivel de análisis, conectado con el segundo porqué.]
+                **Por qué 4:**
+                [Cuarta causa, vinculada al nivel anterior.]
+                **Por qué 5:**
+                [Causa raíz última, relacionada directamente con el evento.]
 
-                Evento: {descripcion_hallazgo}
+                **Causa raíz:**
+                [Causa raíz seleccionada de la lista.]
 
-                Por qué 1: [Primera causa directa basada en la descripción del evento.]
-                Por qué 2: [Causa más profunda que explique la razón detrás del primer porqué.]
-                Por qué 3: [Tercer nivel de análisis, conectado con el segundo porqué.]
-                Por qué 4: [Cuarta causa, vinculada al nivel anterior.]
-                Por qué 5: [Causa raíz última, relacionada directamente con el evento.]
-                Conclusión: [Síntesis de las causas principales identificadas y recomendaciones relevantes.]
+                **Conclusión:**
+                [Síntesis de las causas principales identificadas y recomendaciones relevantes.]
 
-                Plan de acción:
+                **Plan de acción:**
                 [Si es necesario]
                 1. [Acción correctiva inmediata 1 basada en el ejemplo previo.]
                 2. [Acción correctiva inmediata 2 basada en el ejemplo previo.]
@@ -200,7 +230,7 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo)
             ),
             (
                 "human",
-                "{ejemplos_similares}\nEvento: {descripcion_hallazgo}",
+                "{ejemplos_similares}\nEvento: {descripcion_hallazgo}\nCausas raíz posibles: {causas_raiz}",
             ),
         ]
     )
@@ -211,14 +241,14 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo)
     # Ejecutar la invocación
     response = chain.invoke(
         {
-            "ejemplos_similares": first_element,  
-            "descripcion_hallazgo": descripcion_hallazgo 
+            "ejemplos_similares": ejemplos_similares,  
+            "descripcion_hallazgo": descripcion_hallazgo,
+            "causas_raiz": ", ".join(causas_raiz)  # Pasa las causas raíz como una cadena separada por comas
         }
     )
 
     # Devolver la respuesta generada
     return response.content
-
 
 def apply_feedback(original_response, feedback):
     """
@@ -238,27 +268,33 @@ def apply_feedback(original_response, feedback):
         temperature=0.1
     )
 
+    # Se crea el prompt asegurando que la estructura exacta debe ser mantenida
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", """
-                Tienes que corregir y mejorar la siguiente respuesta que incluye un análisis de causa y un plan de acción siguiendo estas instrucciones:
-                
-                - Mantén el formato de la respuesta con la siguiente estructura, respetando la numeración exacta:
-                  Evento:
-                  Por qué 1:
-                  Por qué 2:
-                  Por qué 3:
-                  Por qué 4:
-                  Por qué 5:
-                  Conclusión:
-                  Plan de acción:
-                  (Si no es necesario plan de acción, indica explícitamente que no se requiere un plan y explica por qué.)
+                Tienes que corregir y mejorar la siguiente respuesta que incluye ejemplos previos, evento, análisis de causa, causa raíz y plan de acción. Sigue estas instrucciones cuidadosamente:
 
-                - Si el feedback solo menciona cambios en un "Por qué" específico, solo modifica esa parte y deja los demás "Por qué" sin cambios.
-                - Si el feedback menciona cambios en el "Plan de acción", aplica los cambios solo a esa sección, sin modificar el análisis de causa.
-                - Si se menciona una modificación para la conclusión, modifícala según las sugerencias, sin alterar el resto del análisis o plan.
-                - Si no se mencionan cambios para un "Por qué" o para el plan de acción, no los modifiques.
-                - Asegúrate de respetar el orden y estructura sin agregar o eliminar elementos. No agregues nueva información si no se menciona en el feedback.
+                - Mantén el **formato de la respuesta exactamente como está**, respetando la numeración y la estructura. **No se debe omitir ninguna sección**.
+                - La respuesta debe incluir todas las secciones en este **orden exacto**: 
+                    - Ejemplos previos:
+                    - Evento:
+                    - Análisis de los 5 Porqués:
+                    - Por qué 1:
+                    - Por qué 2:
+                    - Por qué 3:
+                    - Por qué 4:
+                    - Por qué 5:
+                    - Causa raíz:
+                    - Conclusión:
+                    - Plan de acción:
+                
+                - **No modifiques los ejemplos previos**. Estos deben permanecer exactamente como están, sin cambios.
+                - Si el feedback menciona cambios en un "Por qué" específico (por ejemplo, "modificar Por qué 2"), **solo modifica esa parte y deja los demás "Por qué" sin cambios**.
+                - Si el feedback menciona cambios en la "Causa raíz", **realiza la modificación solo en esa sección** según lo indicado en el feedback.
+                - Si el feedback menciona cambios en el "Plan de acción", **aplícalos solo a esa sección**, sin modificar el análisis de causa ni la conclusión.
+                - Si el feedback menciona cambios en la "Conclusión", **realiza solo esas modificaciones** y deja el resto de la respuesta intacto.
+                - Si no se mencionan cambios para un "Por qué", "Plan de acción", "Causa raíz" o "Conclusión", **no los modifiques**.
+                - Asegúrate de mantener **la estructura exacta** de la respuesta, **sin agregar ni eliminar elementos**, y **sin alterar el orden**.
 
                 Respuesta Original: {original_response}
                 Feedback: {feedback}
@@ -267,9 +303,13 @@ def apply_feedback(original_response, feedback):
         ]
     )
 
+    # Creamos la cadena de llamada al modelo
     chain = prompt | llm
+
+    # Invocamos el modelo para procesar la respuesta con el feedback
     response = chain.invoke({"original_response": original_response, "feedback": feedback})
     
+    # Regresamos el contenido corregido
     return response.content
 
 

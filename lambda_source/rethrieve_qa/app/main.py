@@ -27,8 +27,8 @@ def similarity_search_unfiltered(request: SimilarityRequest):
             return {"mensaje": "No se encontraron resultados similares."}
         
         first_element = result["resultados_de_busqueda"][0]
-        print("Generación Análisis de Causas y Plan de Accion")
-        response = generate_cause_analysis_and_action_plan(first_element, request.descripcion_hallazgo)
+        print("Generación Informacion para Reporte de Quejas")
+        response = generate_cause_analysis_and_action_plan(first_element, request.descripcion_hallazgo, request.causa_raiz)
         
         # Verificar si se proporciona feedback para realizar correcciones
         if request.feedback:
@@ -36,10 +36,10 @@ def similarity_search_unfiltered(request: SimilarityRequest):
             response = apply_feedback(response, request.feedback)
         
         # Convertir la respuesta en un formato JSON adecuado, con campos estructurados
-        return {"respuesta": response}  # Empaquetamos la respuesta en un diccionario con clave "respuesta"
+        return {"respuesta": response}  
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error en la búsqueda sin filtro: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error en la búsqueda: {str(e)}")
 
 if __name__ == "__main__":
     uvicorn.run(app, port=8000)

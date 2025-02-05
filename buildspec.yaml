@@ -3,17 +3,31 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo "Logging in to AWS ECR..."
+      - echo "Setting up the environment..."
       - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
+      
+      # Define S3 bucket and base path
+      - S3_BUCKET_NAME="talma-artifacts"
+      - S3_DOWNLOAD_PATH="lambda_source_files/app"
+      - LOCAL_DOWNLOAD_PATH="./lambda_source/manuales/app"
+
+      # Create the target directory if it doesn't exist
+      - mkdir -p $LOCAL_DOWNLOAD_PATH
+
+      # Download all required directories from S3
+      - echo "Downloading datasets_local..."
+      - aws s3 cp s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/datasets_local $LOCAL_DOWNLOAD_PATH/datasets_local --recursive
+      - echo "Downloading local_model..."
+      - aws s3 cp s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/local_model $LOCAL_DOWNLOAD_PATH/local_model --recursive
+      - echo "Downloading local_processor..."
+      - aws s3 cp s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/local_processor $LOCAL_DOWNLOAD_PATH/local_processor --recursive
 
   build:
     commands:
-      - echo "Building Docker images..."
-      - docker build -t my-image ./lambda_source/manuales
-      - docker tag my-image:latest $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/lambda-container-repo:latest
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/lambda-container-repo:latest
+      - echo "Executing deploy.sh script..."
+      - chmod +x ./deploy.sh
+      - ./deploy.sh
 
   post_build:
     commands:
-      - echo "Docker build and push complete."
+      - echo "Deployment completed successfully."

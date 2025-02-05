@@ -205,3 +205,6 @@ lambda_source/manuales/app/local_model
 lambda_source/manuales/app/local_processor
 lambda_source/manuales/app/datasets_local
 lambda_source/manuales/app/.DS_Store
+
+
+.DS_Store

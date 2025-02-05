@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:6936089d27dfdff15592e62ceecbac662aa4d9d7735f02cfd59746b0dbb1b642
-size 334
+from huggingface_hub import snapshot_download
+
+# Download model
+model_path = snapshot_download(
+    repo_id="vidore/colpali-v1.3",
+    local_dir="./local_model"  # Save to local directory
+)
+
+# Download processor
+processor_path = snapshot_download(
+    repo_id="vidore/colpaligemma-3b-pt-448-base",
+    local_dir="./local_processor"
+)
+

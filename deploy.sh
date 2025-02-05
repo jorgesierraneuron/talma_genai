@@ -42,7 +42,8 @@ function upload_to_ecr() {
 
   echo "Construyendo imagen para manuales..."
   DOCKER_DEFAULT_PLATFORM=linux/amd64
-  docker buildx build -o type=image,oci-mediatypes=false --platform linux/amd64/v2 -t $ECR_REPO_NAME:$DOCKER_TAG_MANUALES ./lambda_source/manuales
+  #docker buildx build -o type=image,oci-mediatypes=false --platform linux/amd64/v2 -t $ECR_REPO_NAME:$DOCKER_TAG_MANUALES ./lambda_source/manuales
+  docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_MANUALES ./lambda_source/manuales
   docker tag $ECR_REPO_NAME:$DOCKER_TAG_MANUALES "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_MANUALES"
   docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_MANUALES"
 

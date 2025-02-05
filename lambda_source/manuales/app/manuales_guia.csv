@@ -1,0 +1,130 @@
+PROPIETARIO,NOMBRE DOCUMENTO,ALCANCE,PALABRAS CLAVES,BASES APLICABLES
+LATAM,MANUAL DE OPERACIONES PARTE D LATAM REV.10,Estándares de entrenamiento requerido para el personal asignado a la operación de Latam,"Entrenamiento, capacitacion, instrucción, cursos","ADZ
+AXM
+BGA
+CTG
+CUC
+EYP
+LET
+MTR
+NVA
+PEI
+PSO
+RCH
+SMR
+IBE"
+LATAM,MOT-GRH-LC-001 MANUAL DE OPERACIONES TERRESTRES LATAM CARGO REV.02,"Reúne todas las Políticas y Procedimientos necesarios para desarrollar las Operaciones Terrestres en un
+Aeropuerto, basado en la Política de Seguridad Calidad y medio ambiente..","Aeronave, peso y balance, limpieza, agua potable, pushback, towing, abastecimiento combustible, equipaje, carga, equipos, emergencia, turn around",CLO
+LATAM,MOT-GRH-LT-01 MANUAL DE OPERACIONES EN TIERRA LATAM REV.09,Describe todos los estándares aplicables a las operaciones en tierra para Latam,"Aeronave, peso y balance, limpieza, agua potable, pushback, towing, abastecimiento combustible, equipaje, carga, mercancias peligrosas, equipos, emergencia, turn around, daños aeronaves, incidente, accidente, seguridad, derrame","ADZ
+AXM
+BGA
+CTG
+CUC
+EYP
+LET
+MTR
+NVA
+PEI
+PSO
+RCH
+SMR
+IBE"
+LATAM,MSP-GRH-LT-002 MANUAL DE SERVICIO AL PASAJERO LATAM REV.77,Describe todos los estándares aplicables al servicio a pasajeros Latam,"Aeronave, pasajero, check in, abordaje, pasabordo, equipaje, marcancías peligrosas, bag tag, etiqueta, asiento, conexiones, transito, sobrereserva","ADZ
+AXM
+CUC
+EYP
+NVA
+PEI
+PSO
+RCH
+IBE"
+AVIANCA,MC. AVA MOT MANUAL DE OPERACIONES TERRESTRES AVIANCA REV.4,Describe todos los estándares aplicables a las operaciones en tierra de Avianca,"Aeronave, peso y balance, limpieza, agua potable, pushback, towing, abastecimiento combustible, equipaje, carga, mercancias peligrosas, equipos, emergencia, turn around, daños aeronaves, incidente, accidente, seguridad, derrame","AXM
+BOG
+BGA
+CLO
+CUC
+IBE
+IPI
+LET
+MDE
+MTR
+NVA
+PEI
+PSO
+RCH
+SMR"
+AVIANCA,MO-01 MANUAL MERCANCIAS PELIGROSAS REV.20,"Armonizar todos los requerimientos frente al transporte seguro de las Mercancías Peligrosas exigidos por las autoridades locales e internacionales y estándares de industria IATA con los diferentes procedimientos operativos 
+de la aerolínea","Mercancias peligrosas, equipaje, pasajeros, aeronave","AXM
+BOG
+BGA
+CLO
+CUC
+IBE
+IPI
+LET
+MDE
+MTR
+NVA
+PEI
+PSO
+RCH
+SMR"
+LASA,MAN-FOR-001 MANUAL DE GESTION DEL CONOCIMIENTO REV.09," Establece los pasos para el control de la formación del personal 
+que incide en la seguridad, calidad y cumplimiento de la prestación del servicio, detectando necesidades de formación en cada uno de los procesos y cumpliendo 
+con la normatividad aplicable y los requisitos de las Aerolíneas Clientes.","Curso, entrenamiento, formación, instructor, inicial, recurrente, promoción, cargo, rol, competencias, aprendizaje, seguridad operacional, pensum,  presencial, virtual, SISCAPA, Talma Aprende, OJT. Certificado, nuevo ingreso, evaluación, semillero, cargo, asistencia en tierra, conductor, pasajeros, sillas de ruedas, rampa, seguridad de la aviación civil, operación, equipo de tierra, líder, CIO, Dorty, parqueo, muelle, tierra cabina, comunicación, especializado, AOP, ULD, aeronave","ADZ
+AXM
+BAQ
+BGA
+CUC
+CLO
+CTG
+EYP
+IBE
+IPI
+LET
+MDE
+MTR
+NVA
+PEI
+PSO
+RCH
+SMR"
+LASA,MAN-GET-001 MANUAL DE MANTENIMIENTO DE EQUIPO DE TIERRA LASA REV.26,Establece los lineamientos aplicables al mantenimiento de los equipos de tierra de las bases EXBOG,"Mantenimiento correctivo, mantanimiento preventivo, registro, fuser, inoperativo, hibernación, estado, componentes, repuestos, equipo de tierra, autopropulsado, baterías de plomo, componentes, funcionamiento, riesgos, manipulación, abastecimiento, combustible, tercero, renting, CloudFleet, programas aprobados, software, plantas eléctricas, chequeo, conexión, plug, banco de pruebas, inspección, medición, ensayo, calibración, verificación, multimetro, metrológico, orden de trabajo, rutina, silla de ruedas, escalera, arrancador, aire acondicionado, pallets, ULD, conveyor, diesel, eléctrico, paymover, hidráulica, tractor, carros portaequipajes, drenadores, planchones, GPU, rectificador, neumático, ventiladores, enfriamiento, frenos, lista de chequeo","ADZ
+AXM
+BAQ
+BGA
+CUC
+CLO
+CTG
+EYP
+IBE
+IPI
+LET
+MDE
+MTR
+NVA
+PEI
+PSO
+RCH
+SMR"
+LASA,MAN-HDL-001 MANUAL DE OPERACIONES TERRESTRES LASA REV.50,Describe todos los estándares aplicables a las operaciones en tierra en las bases EXBOG,"Aeronave, pasajero, check in, abordaje, pasabordo, equipaje, marcancías peligrosas, bag tag, etiqueta, asiento, conexiones, transito, sobrereserva, Peso y balance, limpieza, agua potable, pushback, towing, abastecimiento combustible, equipaje, carga, equipos, emergencia, turn around, daños aeronaves, incidente, accidente, seguridad, derrame, parqueo, muelle, señales, pernocta, llegada, salida, calzos, conos, puerta, acceso, remota, posicion, documentación, emergencia, motor","ADZ
+AXM
+BAQ
+BGA
+CUC
+CLO
+CTG
+EYP
+IBE
+IPI
+LET
+MDE
+MTR
+NVA
+PEI
+PSO
+RCH
+SMR"
+SAI,M-GOT-001 MANUAL DE OPERACIONES SAI REV.08,Describe todos los estándares aplicables a las operaciones en tierra en la base BOG,"Aeronave, pasajero, check in, abordaje, pasabordo, equipaje, marcancías peligrosas, bag tag, etiqueta, asiento, conexiones, transito, sobrereserva, Peso y balance, limpieza, agua potable, pushback, towing, abastecimiento combustible, equipaje, carga, equipos, emergencia, turn around, daños aeronaves, incidente, accidente, seguridad, derrame, parqueo, muelle, señales, pernocta, llegada, salida, calzos, conos, puerta, acceso, remota, posicion, documentación, emergencia, motor",BOG
+SAI,M-GTH-001 MANUAL DE ENTRENAMIENTO SAI REV.08, Establece los pasos para el control de la formación del personal de la base BOG,"Curso, entrenamiento, formación, instructor, inicial, recurrente, promoción, cargo, rol, competencias, aprendizaje, seguridad operacional, pensum,  presencial, virtual, SISCAPA, Talma Aprende, OJT. Certificado, nuevo ingreso, evaluación, semillero, cargo, asistencia en tierra, conductor, pasajeros, sillas de ruedas, rampa, seguridad de la aviación civil, operación, equipo de tierra, líder, CIO, Dorty, parqueo, muelle, tierra cabina, comunicación, especializado, AOP, ULD, aeronave",BOG
+SAI,M-MTO-001 MANUAL GENERAL DE MANTENIMIENTO SAI REV.13,Establece los lineamientos aplicables al mantenimiento de los equipos de tierra de la base BOG,"Mantenimiento correctivo, mantanimiento preventivo, registro, fuser, inoperativo, hibernación, estado, componentes, repuestos, equipo de tierra, autopropulsado, baterías de plomo, componentes, funcionamiento, riesgos, manipulación, abastecimiento, combustible, tercero, renting, CloudFleet, programas aprobados, software, plantas eléctricas, chequeo, conexión, plug, banco de pruebas, inspección, medición, ensayo, calibración, verificación, multimetro, metrológico, orden de trabajo, rutina, silla de ruedas, escalera, arrancador, aire acondicionado, pallets, ULD, conveyor, diesel, eléctrico, paymover, hidráulica, tractor, carros portaequipajes, drenadores, planchones, GPU, rectificador, neumático, ventiladores, enfriamiento, frenos, lista de chequeo",BOG

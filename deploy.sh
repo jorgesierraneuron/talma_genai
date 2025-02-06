@@ -5,10 +5,15 @@ set -e
 ENV="dev"
 AWS_REGION="us-east-1"
 ECR_REPO_NAME="lambda-container-repo"
+<<<<<<< HEAD
 DOCKER_TAG_RETHRIEVE_QA="rethrieve_qa_test_${ENV}"
 DOCKER_TAG_JSON_TO_KNOWLEDGE="json_to_knowledge_${ENV}"
 DOCKER_TAG_MANUALES="manuales_${ENV}"
 DOCKER_TAG_MANUALES_TEST="manuales_test_${ENV}"
+=======
+DOCKER_TAG_RETHRIEVE_QA="rethrieve_qa_${ENV}"
+DOCKER_TAG_JSON_TO_KNOWLEDGE="json_to_knowledge_${ENV}"
+>>>>>>> cod_talma_eaguilar
 
 
 # Retrieve AWS account ID
@@ -29,6 +34,7 @@ function upload_to_ecr() {
   #aws ecr create-repository --repository-name lambda-container-repo --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE --region $AWS_REGION
 
 
+<<<<<<< HEAD
   # echo "Construyendo imagen para rethriever_qa..."
   # docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA ./lambda_source/rethrieve_qa
   # docker tag $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA"
@@ -51,6 +57,18 @@ function upload_to_ecr() {
   # docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_MANUALES_TEST ./lambda_source/manuales_test
   # docker tag $ECR_REPO_NAME:$DOCKER_TAG_MANUALES_TEST "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_MANUALES_TEST"
   # docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_MANUALES_TEST"
+=======
+  echo "Construyendo imagen para rethriever_qa..."
+  docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA ./lambda_source/rethrieve_qa
+  docker tag $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA"
+  docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA"  
+
+
+  echo "Construyendo imagen para json_to_knowledge..."
+  docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE ./lambda_source/json_to_knowledge
+  docker tag $ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE"
+  docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE"
+>>>>>>> cod_talma_eaguilar
 
 }
 
@@ -76,4 +94,8 @@ function deploy_terraform() {
 
 # Ejecutar
 upload_to_ecr
+<<<<<<< HEAD
 #deploy_terraform
+=======
+deploy_terraform
+>>>>>>> cod_talma_eaguilar

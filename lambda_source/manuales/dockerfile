@@ -1,18 +1,22 @@
-# Base image with Python 3.9 (compatible with SageMaker)
-FROM python:3.9
+# Use lightweight Python 3.11 image
+FROM python:3.11-slim
 
-# Set the working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy the requirements file and install dependencies
+# Install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire application folder to the container
+# Copy application code
 COPY ./app .
 
-# Expose the port SageMaker uses to communicate
+# Create the "serve" script to run the model
+RUN echo '#!/bin/bash\nexec python3 predict.py' > /usr/bin/serve && chmod +x /usr/bin/serve
+
+# Expose the port required by SageMaker
 EXPOSE 8080
 
-# Set the entrypoint for Flask application
-CMD ["python", "predict.py"]
+# Set entrypoint to match SageMaker expectations
+ENTRYPOINT ["serve"]
+

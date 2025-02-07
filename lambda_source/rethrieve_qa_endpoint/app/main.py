@@ -22,7 +22,7 @@ handler = Mangum(app)
 @app.post("/similarity_search")
 def similarity_search_unfiltered(request: SimilarityRequest):
 
-    try: 
+    #try: 
         descripcion_hallazgo = request.descripcion_hallazgo
         id_generation = dynamo_manager.generate_unique_id(descripcion_hallazgo)
 
@@ -41,9 +41,12 @@ def similarity_search_unfiltered(request: SimilarityRequest):
 
         print(send_sns_message(message))
         
-        return item 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+        return {
+            "upload": "success",
+            "item": item
+        } 
+    # except Exception as e:
+    #     raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 @app.get("/get_result")
 def similarity_search_unfiltered(result: GetResult):

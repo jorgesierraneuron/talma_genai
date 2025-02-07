@@ -1,8 +1,4 @@
 import json
-from fastapi import FastAPI, HTTPException
-from mangum import Mangum
-import uvicorn
-from models import SimilarityRequest
 from utils import search_unfiltered, generate_cause_analysis_and_action_plan, apply_feedback
 from dynamo_manager import DynamoDBManager
 from manuales import Manuales

@@ -4,6 +4,4 @@ langchain_community
 boto3
 neo4j
 pandas
-fastapi
-mangum
-uvicorn
+

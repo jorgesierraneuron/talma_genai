@@ -132,7 +132,7 @@ def search_unfiltered(descripcion_hallazgo):
         ]
     }
 
-def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo, causas_raiz_str):
+def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo, causas_raiz_str, info_manuales):
     """
     Genera un análisis de causa utilizando el método de los 5 Porqués basado en ejemplos previos, 
     seleccionando la causa raíz más apropiada entre las posibles causas raíz pasadas como parámetro, 
@@ -167,6 +167,28 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
             (
                 "system",
                 """
+                Role: Analista de Incidentes operaciones Talma
+
+                Resumen de Responsabilidades:
+
+                - Evaluar eventos aplicando el método de los 5 Porqués y asegurando coherencia con análisis previos.
+                - Identificar la causa raíz y proponer acciones correctivas basadas en datos y ejemplos documentados.
+                - Documentar el análisis de manera estructurada y alineada con el formato estándar.
+                - Recomendar mejoras en procedimientos, capacitación y coordinación dentro de la organización.
+                - Resumen de Habilidades y Competencias:
+                - Pensamiento analítico y enfoque estructurado en la resolución de problemas.
+                - Dominio del método de los 5 Porqués y capacidad para identificar patrones en datos históricos.
+                - Habilidad de redacción técnica clara y concisa.
+                - Conocimiento de procedimientos operativos y normativas relevantes.
+
+                Resumen de Criterios de Evaluación:
+
+                - Precisión en la identificación de la causa raíz.
+                - Lógica y coherencia en cada nivel del análisis de los 5 Porqués.
+                - Aplicabilidad y efectividad de las acciones correctivas propuestas.
+                - Claridad y estructura en la documentación.
+                - Impacto de las recomendaciones en la prevención de eventos futuros.
+
                 A continuación, se presentan ejemplos previos de análisis de causa realizados utilizando el método de los 5 Porqués para eventos similares dentro de la misma operación. 
                 Estos ejemplos incluyen análisis detallados que contienen múltiples campos relevantes, como las causas identificadas, así como los planes de acción implementados para corregir y prevenir los eventos. 
 
@@ -175,30 +197,32 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
 
                 Utilizando estos ejemplos como referencia, realiza un análisis de causa para el siguiente evento nuevo, aplicando el método de los 5 Porqués y asegurándote de basar cada respuesta específicamente en la descripción del evento proporcionada.
 
+                Este es el manual de procedimiento que se debe seguir para ese indicente usalo como insumo el analisis de los 5 porques, la causa raiz y el plan de acción:
+                
+                {manuales}
+
+
                 Evento: {descripcion_hallazgo}
 
                 A continuación, se listan algunas causas raíz posibles. Elige la que más se ajusta al análisis de causa generado para este evento. Solo selecciona una causa raíz de la lista siguiente:
                 {causas_raiz}
 
                 Instrucciones específicas:
-                1. **Siempre** incluye los ejemplos previos tal como están, bajo el título **"Ejemplos previos"**.
-                2. Realiza un análisis de causa utilizando exactamente cinco porqués, asegurándote de que cada uno esté directamente relacionado con la descripción del evento y las posibles causas asociadas.
-                3. Redacta el análisis de forma estructurada, proporcionando explicaciones claras y concisas para cada porqué.
-                4. Integra posibles fallas en procedimientos, coordinación, comunicación, herramientas o recursos humanos siempre que sean relevantes para el evento descrito.
-                5. Asegúrate de que las respuestas sean lógicas y progresivas, explorando cada nivel de causa hasta llegar a la raíz del problema.
-                6. Concluye con un breve resumen de las causas principales identificadas.
-                7. **Responde en el formato exacto proporcionado a continuación.**
+                1. Realiza un análisis de causa utilizando exactamente cinco porqués, asegurándote de que cada uno esté directamente relacionado con la descripción del evento y las posibles causas asociadas.
+                2. Redacta el análisis de forma estructurada, proporcionando explicaciones claras y concisas para cada porqué.
+                3. Integra posibles fallas en procedimientos, coordinación, comunicación, herramientas o recursos humanos siempre que sean relevantes para el evento descrito.
+                4. Asegúrate de que las respuestas sean lógicas y progresivas, explorando cada nivel de causa hasta llegar a la raíz del problema.
+                5. Concluye con un breve resumen de las causas principales identificadas.
+                6. **Responde en el formato exacto proporcionado a continuación.**
+                
 
                 El formato de salida esperado es el siguiente:
-
-                **Ejemplos previos:**
-                {ejemplos_similares}
 
                 **Evento:**
                 {descripcion_hallazgo}
 
                 **Análisis de los 5 Porqués:**
-
+                
                 **Por qué 1:**
                 [Primera causa directa basada en la descripción del evento.]
                 **Por qué 2:**
@@ -225,12 +249,13 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
                 5. [Acciones adicionales para prevenir la repetición del evento basadas en lo aprendido previamente.]
 
                 [Si NO es necesario el plan de acción]
-                No se requiere un plan de acción porque el evento fue causado por [explicación detallada de por qué no se necesita un plan de acción].
+                No se requiere un plan de acción porque el evento fue causado por [explicación detallada de por qué no se necesita un plan de acción]
+                - 
                 """
             ),
             (
                 "human",
-                "{ejemplos_similares}\nEvento: {descripcion_hallazgo}\nCausas raíz posibles: {causas_raiz}",
+                "Evalua el evento y genera los 5 porques, la causa raiz y el plan de acción",
             ),
         ]
     )
@@ -243,14 +268,19 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
         {
             "ejemplos_similares": ejemplos_similares,  
             "descripcion_hallazgo": descripcion_hallazgo,
-            "causas_raiz": ", ".join(causas_raiz)  # Pasa las causas raíz como una cadena separada por comas
+            "causas_raiz": ", ".join(causas_raiz),  # Pasa las causas raíz como una cadena separada por comas
+            "manuales": info_manuales
         }
     )
 
     # Devolver la respuesta generada
-    return response.content
+    return {
+        "response": response.content,
+        "ejemplos_similares": ejemplos_similares,
+        "causas_raiz": ", ".join(causas_raiz)
+    }
 
-def apply_feedback(original_response, feedback):
+def apply_feedback(item):
     """
     Aplica el feedback recibido a la respuesta generada, tanto al análisis de causa como al plan de acción.
     
@@ -307,7 +337,7 @@ def apply_feedback(original_response, feedback):
     chain = prompt | llm
 
     # Invocamos el modelo para procesar la respuesta con el feedback
-    response = chain.invoke({"original_response": original_response, "feedback": feedback})
+    response = chain.invoke({"original_response": item["response"], "feedback": item["feedback"]})
     
     # Regresamos el contenido corregido
     return response.content

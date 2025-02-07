@@ -6,21 +6,21 @@ phases:
       - echo "Setting up the environment..."
       - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
       
-      # Define S3 bucket and base path
-      - S3_BUCKET_NAME="talma-artifacts"
-      - S3_DOWNLOAD_PATH="lambda_source_files/app"
-      - LOCAL_DOWNLOAD_PATH="./lambda_source/manuales/app"
+      # # Define S3 bucket and base path
+      # - S3_BUCKET_NAME="talma-artifacts"
+      # - S3_DOWNLOAD_PATH="lambda_source_files/app"
+      # - LOCAL_DOWNLOAD_PATH="./lambda_source/manuales/app"
 
-      # Create the target directory if it doesn't exist
-      - mkdir -p $LOCAL_DOWNLOAD_PATH
+      # # Create the target directory if it doesn't exist
+      # - mkdir -p $LOCAL_DOWNLOAD_PATH
 
-      # Download all required directories from S3
-      - echo "Downloading datasets_local..."
-      - aws s3 cp s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/datasets_local $LOCAL_DOWNLOAD_PATH/datasets_local --recursive
-      - echo "Downloading local_model..."
-      - aws s3 cp s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/local_model $LOCAL_DOWNLOAD_PATH/local_model --recursive
-      - echo "Downloading local_processor..."
-      - aws s3 cp s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/local_processor $LOCAL_DOWNLOAD_PATH/local_processor --recursive
+      # # Download all required directories from S3
+      # - echo "Downloading datasets_local..."
+      # - aws s3 cp s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/datasets_local $LOCAL_DOWNLOAD_PATH/datasets_local --recursive
+      # - echo "Downloading local_model..."
+      # - aws s3 cp s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/local_model $LOCAL_DOWNLOAD_PATH/local_model --recursive
+      # - echo "Downloading local_processor..."
+      # - aws s3 cp s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/local_processor $LOCAL_DOWNLOAD_PATH/local_processor --recursive
 
   build:
     commands:

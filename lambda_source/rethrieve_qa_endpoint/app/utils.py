@@ -11,11 +11,13 @@ def send_sns_message(topic_arn, message_dict, subject="Notification"):
     :param message_dict: Dictionary containing the message payload
     :param subject: Subject of the message (optional)
     """
-    message_json = json.dumps(message_dict)
+    message_json = {
+        "default": json.dumps(message_dict)  
+    }
     
     response = sns_client.publish(
         TopicArn=topic_arn,
-        Message=message_json,
+        Message=json.dumps(message_json),  
         Subject=subject,
         MessageStructure="json"
     )

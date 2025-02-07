@@ -5,7 +5,7 @@ import uvicorn
 from models import SimilarityRequest, GetResult
 from fastapi.middleware.cors import CORSMiddleware
 from dynamomanager import DynamoDBManager
-
+from utils import send_sns_message
 app = FastAPI()
 
 dynamo_manager=DynamoDBManager("generation_talma_genai")
@@ -34,6 +34,12 @@ def similarity_search_unfiltered(request: SimilarityRequest):
         }
 
         print(dynamo_manager.upload_item(item))
+
+        message = {
+            "id_generation": id_generation
+        }
+
+        print(send_sns_message(message))
         
         return item 
     except Exception as e:

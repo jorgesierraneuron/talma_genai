@@ -51,12 +51,14 @@ def similarity_search_unfiltered(request: SimilarityRequest):
 @app.get("/get_result/{id_generation}")
 def similarity_search_unfiltered(id_generation: str):
 
-    try: 
+    #try: 
         item = dynamo_manager.retrieve_item(id_generation)
-        return item
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+        return {
+                "result": item
+        }
+    #except Exception as e:
+    #    raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 
-if __name__ == "__main__":
-    uvicorn.run(app, port=8000)
+# if __name__ == "__main__":
+#     uvicorn.run(app, port=8000)

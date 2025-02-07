@@ -39,7 +39,7 @@ def similarity_search_unfiltered(request: SimilarityRequest):
             "id_generation": id_generation
         }
 
-        print(send_sns_message(message))
+        print(send_sns_message("arn:aws:sns:us-east-1:242201272670:test_rethrieve_qa",message))
         
         return {
             "upload": "success",

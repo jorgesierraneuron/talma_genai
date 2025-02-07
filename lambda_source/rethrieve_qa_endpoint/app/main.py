@@ -48,7 +48,7 @@ def similarity_search_unfiltered(request: SimilarityRequest):
     # except Exception as e:
     #     raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
-@app.get("/get_result")
+@app.get("/get_result/{id_generation}")
 def similarity_search_unfiltered(id_generation: str):
 
     try: 

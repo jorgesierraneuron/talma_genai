@@ -48,16 +48,16 @@ def similarity_search_unfiltered(request: SimilarityRequest):
     # except Exception as e:
     #     raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
-@app.get("/get_result/{id_generation}")
-def similarity_search_unfiltered(id_generation: str):
+@app.post("/get_result")
+def get_result(result: GetResult):
 
-    #try: 
-        item = dynamo_manager.retrieve_item(id_generation)
+    try: 
+        item = dynamo_manager.retrieve_item(result.id_generation)
         return {
                 "result": item
         }
-    #except Exception as e:
-    #    raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+    except Exception as e:
+       raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 
 # if __name__ == "__main__":

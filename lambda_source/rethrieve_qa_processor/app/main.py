@@ -4,7 +4,6 @@ from dynamo_manager import DynamoDBManager
 from manuales import Manuales
 
 
-
 def handler(event, context = ""):
     
     print(event)
@@ -25,25 +24,18 @@ def handler(event, context = ""):
     manuales=Manuales(item["descripcion_hallazgo"])
     
     try:    
-        
 
         if item.get("feedback"):
             print("Aplicando feedback a la respuesta generada")
-            # se le debe pasar el id del incidente y con eso, trae la respuesta anterior la modifique y la vuelve a subir a dynamo, con la fecha de generación.
-            # OJO PENDIENTE 
-
+            
             feedback = item["feedback"]
-
             response = apply_feedback(item)
-
             item["response"] = response
             item["status"] = "completed"
 
             print(dynamo_manager.update_item(id_generation,item))
 
             return {"respuesta": f"feedback aplied, feedback: {feedback}"} 
-            
-    
 
         print("Búsqueda de Similaridad")
         result = search_unfiltered(item["descripcion_hallazgo"])
@@ -68,18 +60,15 @@ def handler(event, context = ""):
 
         print(dynamo_manager.update_item(id_generation,item))
 
-
         return {"status": f"upload response {id_generation}"}  
     
     except Exception as e:
         raise e
     
-
 # if __name__ == "__main__":
     
 #     event = {
 #         "id_generation": "31f48d89"
 #     }
-
     
 #     print(handler(event))

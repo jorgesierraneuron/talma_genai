@@ -1,8 +1,9 @@
 from pydantic import BaseModel
 
 class SimilarityRequest(BaseModel):
-    descripcion_hallazgo: str
-    causa_raiz: str
+    id_generation: str = None 
+    descripcion_hallazgo: str = None
+    causa_raiz: str = None
     feedback: str = None
 
 class GetResult(BaseModel):

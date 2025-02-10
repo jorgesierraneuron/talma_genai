@@ -2,8 +2,8 @@ import streamlit as st
 import requests
 import time
 
-API_URL_CREATE = " "  
-API_URL_GET = " "  
+API_URL_CREATE = ""  
+API_URL_GET = ""  
 
 st.markdown("<h1 style='text-align: center;'>🤖 Chatbot Talma Reportes De Quejas</h1>", unsafe_allow_html=True)
 
@@ -49,7 +49,10 @@ if st.button("Generar Reporte"):
                         status = report_data.get("result", {}).get("status", "unknown")
 
                         if status == "completed":
-                            st.session_state["last_response"] = report_data["result"]["response"]
+
+                            ejemplos_similares = report_data.get("result", {}).get("ejemplos_similares", "unknown")
+                            response_info = report_data["result"]["response"]
+                            st.session_state["last_response"] = f"Ejemplos previos:\n\n\n{ejemplos_similares}\n\n\n{response_info}"
                             st.success("Reporte generado exitosamente.")
                             st.write(st.session_state["last_response"])
                             break

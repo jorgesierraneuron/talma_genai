@@ -160,7 +160,7 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
         )
     
         # Convertir el diccionario de first_element a una representación legible para el prompt
-        ejemplos_similares = "\n".join([f"{key}: {value}" for key, value in first_element.items()])
+        ejemplos_similares = "\n\n\n".join([f"{key}: {value}" for key, value in first_element.items()])
     
         # Definir el template de prompt con formato optimizado
         prompt = ChatPromptTemplate.from_messages(

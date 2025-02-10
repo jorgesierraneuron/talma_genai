@@ -52,9 +52,9 @@ if st.button("Generar Reporte"):
 
                             ejemplos_similares = report_data.get("result", {}).get("ejemplos_similares", "unknown")
                             response_info = report_data["result"]["response"]
-                            st.session_state["last_response"] = f"Ejemplos previos:\n\n\n{ejemplos_similares}\n\n\n{response_info}"
+                            st.session_state["last_response"] = report_data["result"]["response"]
                             st.success("Reporte generado exitosamente.")
-                            st.write(st.session_state["last_response"])
+                            st.write(f"Ejemplos previos:\n\n\n{ejemplos_similares}\n\n\n{response_info}")
                             break
                         else:
                             retry_count += 1
@@ -119,9 +119,12 @@ if st.session_state["feedback_mode"]:
                             status = report_data.get("result", {}).get("status", "unknown")
                             
                             if status == "completed": 
+
+                                ejemplos_similares = report_data.get("result", {}).get("ejemplos_similares", "unknown")
+                                response_info = report_data["result"]["response"]
                                 st.session_state["last_response"] = report_data["result"]["response"]
                                 st.success("Reporte mejorado generado exitosamente.")
-                                st.write(st.session_state["last_response"])
+                                st.write(f"Ejemplos previos:\n\n\n{ejemplos_similares}\n\n\n{response_info}")
                                 break
                             else:
                                 retry_count += 1

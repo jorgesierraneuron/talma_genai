@@ -221,9 +221,6 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
 
                     Formato de salida:
 
-                    Evento:
-                    {descripcion_hallazgo}
-
                     Análisis de los 5 Porqués:
 
                     - Por qué 1: [Pregunta sobre el evento y primera causa directa.]
@@ -251,7 +248,7 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
                 ),
                 (
                     "human",
-                    "Evalúa el evento y genera el análisis de causa con los Porqués necesarios, la causa raíz y un plan de acción concreto."
+                    "Evalúa el evento e identifica la causa raíz real del incidente mediante un análisis lógico y progresivo, sin forzar cinco porqués si no son necesarios, y definir planes de acción para corregir y prevenir eventos."
                 ),
             ]
         )

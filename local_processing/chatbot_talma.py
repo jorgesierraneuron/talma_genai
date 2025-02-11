@@ -37,12 +37,12 @@ if st.button("Generar Reporte"):
 
                 # **Consulta Automática al Segundo Endpoint (POST)**
                 report_payload = {"id_generation": st.session_state["id_generation"]}
-                max_retries = 3  # Número máximo de intentos
+                max_retries = 5  # Número máximo de intentos
                 retry_count = 0
                 
                 while retry_count < max_retries:
                     report_response = requests.post(API_URL_GET, json=report_payload)
-                    time.sleep(50)  # Esperar antes de cada intento
+                    time.sleep(30)  # Esperar antes de cada intento
                     
                     if report_response.status_code == 200:
                         report_data = report_response.json()
@@ -51,10 +51,11 @@ if st.button("Generar Reporte"):
                         if status == "completed":
 
                             ejemplos_similares = report_data.get("result", {}).get("ejemplos_similares", "unknown")
+                            info_manuales = report_data.get("result", {}).get("info_manuales", "unknown")
                             response_info = report_data["result"]["response"]
                             st.session_state["last_response"] = report_data["result"]["response"]
                             st.success("Reporte generado exitosamente.")
-                            st.write(f"Ejemplos previos:\n\n\n{ejemplos_similares}\n\n\n{response_info}")
+                            st.write(f"Ejemplos previos:\n\n\n{ejemplos_similares}\n\n\nInformacion manuales:\n\n\n{info_manuales}\n\n\n{response_info}")
                             break
                         else:
                             retry_count += 1
@@ -106,7 +107,7 @@ if st.session_state["feedback_mode"]:
                     
                     # **Consulta Automática al Segundo Endpoint con Feedback**
                     report_payload = {"id_generation": st.session_state["id_generation"]}
-                    max_retries = 3
+                    max_retries = 5
                     retry_count = 0
                     
                     while retry_count < max_retries:
@@ -121,10 +122,11 @@ if st.session_state["feedback_mode"]:
                             if status == "completed": 
 
                                 ejemplos_similares = report_data.get("result", {}).get("ejemplos_similares", "unknown")
+                                info_manuales = report_data.get("result", {}).get("info_manuales", "unknown")
                                 response_info = report_data["result"]["response"]
                                 st.session_state["last_response"] = report_data["result"]["response"]
                                 st.success("Reporte mejorado generado exitosamente.")
-                                st.write(f"Ejemplos previos:\n\n\n{ejemplos_similares}\n\n\n{response_info}")
+                                st.write(f"Ejemplos previos:\n\n\n{ejemplos_similares}\n\n\nInformacion manuales:\n\n\n{info_manuales}\n\n\n{response_info}")
                                 break
                             else:
                                 retry_count += 1

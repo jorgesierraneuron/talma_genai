@@ -16,7 +16,7 @@ if "feedback_mode" not in st.session_state:
     st.session_state["feedback_mode"] = False
 
 # **Sección 1: Ingreso de Datos**
-st.header("Ingresar Información del Hallazgo")
+st.header("Ingresar Información Para el Reporte")
 descripcion_hallazgo = st.text_area("Descripción del hallazgo:")
 causa_raiz = st.text_area("Lista de Causas Raíz:")
 
@@ -52,10 +52,11 @@ if st.button("Generar Reporte"):
 
                             ejemplos_similares = report_data.get("result", {}).get("ejemplos_similares", "unknown")
                             info_manuales = report_data.get("result", {}).get("info_manuales", "unknown")
+                            evento_hallazgo = report_data.get("result", {}).get("descripcion_hallazgo", "unknown")
                             response_info = report_data["result"]["response"]
                             st.session_state["last_response"] = report_data["result"]["response"]
                             st.success("Reporte generado exitosamente.")
-                            st.write(f"Ejemplos previos:\n\n\n{ejemplos_similares}\n\n\nInformacion manuales:\n\n\n{info_manuales}\n\n\n{response_info}")
+                            st.write(f"Ejemplos previos:\n\n\n{ejemplos_similares}\n\n\nInformacion manuales:\n\n\n{info_manuales}\n\n\nEvento:\n\n\n{evento_hallazgo}\n\n\n{response_info}")
                             break
                         else:
                             retry_count += 1
@@ -123,10 +124,11 @@ if st.session_state["feedback_mode"]:
 
                                 ejemplos_similares = report_data.get("result", {}).get("ejemplos_similares", "unknown")
                                 info_manuales = report_data.get("result", {}).get("info_manuales", "unknown")
+                                evento_hallazgo = report_data.get("result", {}).get("descripcion_hallazgo", "unknown")
                                 response_info = report_data["result"]["response"]
                                 st.session_state["last_response"] = report_data["result"]["response"]
                                 st.success("Reporte mejorado generado exitosamente.")
-                                st.write(f"Ejemplos previos:\n\n\n{ejemplos_similares}\n\n\nInformacion manuales:\n\n\n{info_manuales}\n\n\n{response_info}")
+                                st.write(f"Ejemplos previos:\n\n\n{ejemplos_similares}\n\n\nInformacion manuales:\n\n\n{info_manuales}\n\n\nEvento:\n\n\n{evento_hallazgo}\n\n\n{response_info}")
                                 break
                             else:
                                 retry_count += 1

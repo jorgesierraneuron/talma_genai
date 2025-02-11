@@ -204,8 +204,6 @@ class VisionRAG:
 
         response = self.openai_client.chat.completions.create(
             model="gpt-4o-mini",
-            max_completion_tokens=16383,
-            max_tokens=128000,
             messages=[
                 {
                     "role": "user",

@@ -167,7 +167,7 @@ class VisionRAG:
             query=multivector_query,
             limit=1,
             timeout=100,
-            query_filter=filter_condition,
+            #query_filter=filter_condition,
             search_params=SearchParams(
                 quantization=QuantizationSearchParams(
                     ignore=False,

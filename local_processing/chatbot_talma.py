@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import time
+import re
 
 API_URL_CREATE = "https://qsdwrr8keh.execute-api.us-east-1.amazonaws.com/dev/similarity_search"  
 API_URL_GET = "https://qsdwrr8keh.execute-api.us-east-1.amazonaws.com/dev/get_result"  
@@ -24,9 +25,11 @@ causa_raiz = st.text_area("Lista de Causas Raíz:")
 if st.button("Generar Reporte"):
     if descripcion_hallazgo and causa_raiz:
         payload = {
-            "descripcion_hallazgo": descripcion_hallazgo,
+            "descripcion_hallazgo": re.sub(r'\n+', ' ', descripcion_hallazgo),
             "causa_raiz": causa_raiz,
         }
+
+        print(payload)
         with st.spinner("Generando reporte..."):
             try:
                 response = requests.post(API_URL_CREATE, json=payload)

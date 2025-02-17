@@ -14,6 +14,9 @@ from qdrant_client.models import Filter, FieldCondition, MatchValue, SearchParam
 import base64
 from openai import OpenAI
 from config import qdrant_key,qdrant_url,openai_api_key
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 class ChainManuales: 
 
@@ -77,20 +80,6 @@ class VisionRAG:
     api_key=qdrant_key,
     )
 
-    # # Initialize ColPali model and processor
-    # model_name = (
-    #     "vidore/colpali-v1.3"  # Use the latest version available
-    # )
-    # colpali_model = ColPali.from_pretrained(
-    #     model_name,
-    #     torch_dtype=torch.bfloat16,
-    #     device_map="mps",  # Use "cuda:0" for GPU, "cpu" for CPU, or "mps" for Apple Silicon
-    # )
-
-    # colpali_processor = ColPaliProcessor.from_pretrained(
-    #     "vidore/colpaligemma-3b-pt-448-base"
-    # )
-
     # Load from local paths
     colpali_model = ColPali.from_pretrained(
         "./local_model",  # Path to downloaded model
@@ -99,10 +88,6 @@ class VisionRAG:
     )
 
     colpali_processor = ColPaliProcessor.from_pretrained("./local_processor")
-
-
-
-
 
     df_markdown = pd.read_csv("manuales_guia.csv").to_markdown()
 
@@ -129,16 +114,9 @@ class VisionRAG:
             
             # Obtener la imagen en formato bytes
             image_data_bytes = dataset[index]["image"]
-            
-            # # Convertir los bytes en un objeto PIL Image
-            # image = Image.open(BytesIO(image_data_bytes))
-            
-            # # Mostrar la imagen
-            # image.show()
-            # print(f"Mostrando la imagen en el índice {index}.")
         
         except Exception as e:
-            print(f"Error al mostrar la imagen: {e}")
+            logging.info(f"Error al mostrar la imagen: {e}")
 
         return image_data_bytes
     
@@ -179,8 +157,7 @@ class VisionRAG:
             
         )
         
-        #self.qdrant_client.close()
-        return search_result.points[0].id
+        return search_result.points[0].id, search_result.points[0].payload["nombre_documento"]
     
     @staticmethod
     def __bytes_to_base64(bytes_imagen): 
@@ -247,11 +224,11 @@ class VisionRAG:
     def run(self, query): 
 
 
-        query_manual, manual_name = self.__get_manual_name_query_manuals(query)
+        query_manual, manual_name_ia = self.__get_manual_name_query_manuals(query)
 
-        idx = self.__search_qdrant(query_manual, "manuales_talma_dev",manual_name)
+        idx, manual_name = self.__search_qdrant(query_manual, "manuales_talma_dev",manual_name_ia)
         
-        print(f"Manual name: {manual_name}")
+        logging.info(f"Manual name: {manual_name}")
 
 
         manual_name_dataset =  re.sub(r"(REV[^.]*)\..*", r"\1", manual_name)

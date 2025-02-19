@@ -263,6 +263,8 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
 
         Trazabilidad: Cada acción debe responder a un eslabón específico de la cadena de análisis (ej.: Si el Porqué 3 fue "falta de capacitación en X procedimiento", la acción debe ser "capacitación enfocada en X").
         Referencias a Incidentes Pasados: Solo incluir si coinciden en causa raíz, contexto operativo y resultado.
+        Los planes de acción siempre deben ser los minimos posibles, mas de 4 son inaceptables.
+        Solo generar mas de uno en caso que sea estrictamente necesario basado en el analisis de causas y en la conclusion.
 
         Solo incluir mas de un plan de acción en caso que el analisis de causa raiz y los 5 porques, requieran mas de un plan de acción
 
@@ -301,6 +303,7 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
         Causas oficiales: Solo usar términos estandarizados (ej.: "Falla en protocolo de seguridad" ➔ no "Error en paso 3 del protocolo").
         Usar incidentes historicos como referencia, si solo presentan un plan de acción, generar solo un plan de acción, siempre siguiente la estrutura y analisis de incidentes historicos.
         No incluyas ningun tipo de fecha o responsables en los planes de acción
+        En caso que la causa raiz del incidente historico sea no procede no la tenga en cuenta en tu generación como ejemplo.
         """
 
         human_prompt="""

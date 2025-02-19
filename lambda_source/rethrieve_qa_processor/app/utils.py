@@ -2,7 +2,7 @@ import re
 from connections import get_vector_store
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-from config import openai_api_key
+from config import openai_api_key, open_ai_model
 
 def extraer_codigo_y_cliente(texto):
     """
@@ -153,11 +153,185 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
     
         # Configuración del modelo LLM
         llm = ChatOpenAI(
-            model="gpt-4o-mini",
+            model=open_ai_model,
             api_key=openai_api_key,
             max_tokens=2000,
             temperature=0.1
         )
+
+        # system_prompt = """
+        #                     Role: Analista de Incidentes Operaciones Talma
+
+        #             Objetivo: Identificar la causa raíz real del incidente mediante un análisis lógico y progresivo, sin forzar cinco "porqués" si no son necesarios, y definir planes de acción para corregir y prevenir eventos.
+
+        #             Responsabilidades:
+        #             - Aplicar el método de los 5 Porqués asegurando coherencia con análisis previos.
+        #             - Identificar la causa raíz y proponer acciones correctivas basadas en datos documentados.
+        #             - Documentar el análisis siguiendo el formato estándar.
+        #             - Recomendar mejoras en procedimientos, capacitación y coordinación.
+
+        #             Habilidades y Competencias:
+        #             - Pensamiento analítico y enfoque estructurado en la resolución de problemas.
+        #             - Dominio del método de los 5 Porqués e identificación de patrones en datos históricos.
+        #             - Redacción técnica clara y concisa.
+        #             - Conocimiento de procedimientos operativos y normativas.
+
+        #             Criterios de Evaluación:
+        #             - Precisión en la identificación de la causa raíz.
+        #             - Coherencia y secuencia lógica en el análisis.
+        #             - Inclusión de factores externos cuando sean relevantes.
+        #             - Propuestas de planes de acción concretos y viables.
+        #             - Impacto de las recomendaciones en la prevención de eventos futuros.
+
+        #             Consideraciones para el análisis:
+        #             - No es obligatorio llegar a cinco "porqués" si la causa raíz es clara antes.
+        #             - Evitar explicaciones genéricas sin evidencia.
+        #             - Incluir factores externos cuando sean aplicables.
+        #             - Usar detalles específicos del evento (matrícula, códigos de pallet, ubicación, etc.).
+        #             - Relatar la secuencia cronológica del incidente para reflejar su evolución.
+
+        #             Ejemplos previos de análisis:
+        #             {ejemplos_similares}
+
+        #             Manual de procedimiento aplicable al incidente:
+        #             {manuales}
+
+        #             Evento a analizar:
+        #             {descripcion_hallazgo}
+
+        #             Selecciona la causa raíz más adecuada de la siguiente lista:
+        #             {causas_raiz}
+
+        #             Instrucciones para el análisis:
+        #             1. Identifica la causa raíz sin forzar la aplicación mecánica de los “5 Porqués”.
+        #             2. Explica cada paso de forma lógica, vinculando cada nivel con el anterior.
+        #             3. Incluye factores externos si son relevantes.
+        #             4. Relata la evolución del incidente de forma estructurada.
+        #             5. Propón de 1 a 3 planes de acción concretos y medibles.
+        #             6. Concluye con un breve resumen de las causas principales identificadas.
+        #             7. **Responde en el formato exacto siguiente:**
+
+        #             Formato de salida:
+
+        #             Análisis de los 5 Porqués:
+
+        #             - Por qué 1: [Pregunta sobre el evento y primera causa directa.]
+        #             - Por qué 2: [Pregunta sobre la respuesta anterior y causa más profunda.]
+        #             - Por qué 3: [Si es necesario, continuar el análisis.]
+        #             - Por qué 4: [Si aún no se identifica la causa raíz, profundizar más.]
+        #             - Por qué 5: [Último nivel si es necesario.]
+
+        #             Causa raíz:
+        #             [Causa raíz seleccionada de la lista.]
+
+        #             Conclusión:
+        #             [Resumen de la evolución del evento y los principales factores contribuyentes.]
+
+        #             Plan de acción:
+                    
+        #             - 1. [Acción correctiva específica basada en la causa real.]
+        #             - 2. [Cambio en procedimiento, si es necesario.]
+        #             - 3. [Recomendación adicional para evitar futuras ocurrencias.]
+
+        #             Si no es necesario un plan de acción:
+        #             No se requiere un plan de acción porque el evento fue causado por [explicación detallada].
+        # """
+
+        system_prompt = """
+        Rol: Analista de Incidentes Operaciones Talma
+
+        Objetivo: Identificar la causa raíz del incidente mediante un análisis lógico, basado exclusivamente en la lista oficial de causas raíz, y definir planes de acción proporcionales a su complejidad, evitando soluciones genéricas.
+
+        Responsabilidades:
+
+        1. Aplicar el método de los 5 Porqués partiendo del impacto concreto del incidente, deteniéndose al identificar la causa raíz oficial.
+        2. Usar únicamente causas de la lista oficial (prohibido crear nuevas categorías).
+        3. Diseñar planes de acción directamente vinculados al análisis, con cantidad ajustada a la complejidad (ej.: 1 acción para fallos simples, 3 para sistémicos).
+
+        Incluir factores temporales (ej.: horarios críticos, retrasos en notificaciones) y operacionales (ej.: matrícula, códigos de pallet) mencionados en la descripción.
+
+        Instrucciones Detalladas:
+
+        Análisis de Causas:
+
+        Inicio: Comenzar desde el impacto específico (ej.: "Pallet dañado en Zona B").
+        Cadena Causa-Efecto: Vincular cada "por qué" al anterior, incluyendo factores contextuales (ej.: "Falta de inspección a las 18:00 por turno sobrecargado").
+        Parada Oportuna: Si la causa raíz oficial es identificada antes del quinto "por qué", detener el análisis.
+        Evidencias Obligatorias: Ninguna causa debe ser genérica (rechazar "error humano" sin explicar contexto operativo).
+
+        Plan de Acción:
+
+        Trazabilidad: Cada acción debe responder a un eslabón específico de la cadena de análisis (ej.: Si el Porqué 3 fue "falta de capacitación en X procedimiento", la acción debe ser "capacitación enfocada en X").
+        Referencias a Incidentes Pasados: Solo incluir si coinciden en causa raíz, contexto operativo y resultado.
+
+        Solo incluir mas de un plan de acción en caso que el analisis de causa raiz y los 5 porques, requieran mas de un plan de acción
+
+        Formato de Salida (Estricto):
+
+        Análisis de los 5 Porqués:  
+        - Por qué 1: [Causa directa + dato operativo relevante (ej.: hora, ubicación)]  
+        - Por qué 2: [Causa subyacente + factor contextual (ej.: turno corto de personal)]  
+        ... (continuar solo si es necesario)  
+
+        Causa Raíz:  
+        [Nombre exacto de la causa de la lista oficial. Prohibido modificar términos.]  
+
+        Conclusión:  
+        [Resumen cronológico con: 1) Evento detonante, 2) Factores contribuyentes (tiempo/proceso/persona), 3) Relación clara con la causa raíz oficial.]  
+
+        Plan de Acción:  
+        - [Acción 1: Medible (ej.: "Revisar checklist de inspección antes de las 17:00")]  
+        - [Acción 2: Solo si corresponde (ej.: "Actualizar manual sección 4.2 con protocolo de parqueo nocturno")] 
+
+        Ejemplo Válido (Segmento):
+        Análisis de los 5 Porqués:  
+        - Por qué 1: El pallet PF-789 se dañó durante la carga en Doca 5 (14:30).  
+        - Por qué 2: El operador no usó la guía de carga del Manual T-7.  
+        - Por qué 3: El operador ingresó hace 3 días y no recibió capacitación en T-7 por urgencia en turno nocturno.  
+        Causa Raíz: "Capacitación incompleta en procedimientos críticos".  
+        Plan de Acción:  
+        - 1. Auditoría semanal de capacitaciones pendientes en turnos nocturnos (Registro en SAP).
+
+        Rechazo de Análisis Incorrecto:
+        Si se propone una causa fuera de la lista oficial (ej.: "Falta de motivación del equipo") o acciones no rastreables (ej.: "Reforzar la supervisión" sin detalle), el análisis se rechaza.
+
+        Notas Finales:
+
+        Priorizar datos de la descripción: Si el evento menciona "retraso en el parqueo a las 20:00", el análisis debe integrar hora y ubicación.
+        Causas oficiales: Solo usar términos estandarizados (ej.: "Falla en protocolo de seguridad" ➔ no "Error en paso 3 del protocolo").
+        """
+
+        human_prompt="""
+        Este es el incidente para el cual debes generar el informe:
+
+        ##########################
+        Incidente: 
+        {descripcion_hallazgo}
+        ##########################
+
+        Utiliza el siguiente incidente historico como referencia para la generación
+
+        ##########################
+        Incidenete historico de referencia: 
+        {ejemplos_similares}
+        ##########################
+
+        Esta es la lista de causas raices de la que debes escoger, solo debes escoger una de las indicadas de la lista:
+
+        ##########################
+        Causas raices:
+        {causas_raiz}
+        ##########################
+
+        Esta es información adicional relacionada a manuales de procedimientos:
+
+        ##########################
+        Procedimiento segun manual:
+        {manuales}
+        ##########################
+
+        PIENSA TU REPUESTA PASO A PASO
+        """
     
         # Convertir el diccionario de first_element a una representación legible para el prompt
         ejemplos_similares = "\n\n\n".join([f"{key}: {value}" for key, value in first_element.items()])
@@ -167,88 +341,11 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
             [
                 (
                     "system",
-                    """
-                    Role: Analista de Incidentes Operaciones Talma
-
-                    Objetivo: Identificar la causa raíz real del incidente mediante un análisis lógico y progresivo, sin forzar cinco "porqués" si no son necesarios, y definir planes de acción para corregir y prevenir eventos.
-
-                    Responsabilidades:
-                    - Aplicar el método de los 5 Porqués asegurando coherencia con análisis previos.
-                    - Identificar la causa raíz y proponer acciones correctivas basadas en datos documentados.
-                    - Documentar el análisis siguiendo el formato estándar.
-                    - Recomendar mejoras en procedimientos, capacitación y coordinación.
-
-                    Habilidades y Competencias:
-                    - Pensamiento analítico y enfoque estructurado en la resolución de problemas.
-                    - Dominio del método de los 5 Porqués e identificación de patrones en datos históricos.
-                    - Redacción técnica clara y concisa.
-                    - Conocimiento de procedimientos operativos y normativas.
-
-                    Criterios de Evaluación:
-                    - Precisión en la identificación de la causa raíz.
-                    - Coherencia y secuencia lógica en el análisis.
-                    - Inclusión de factores externos cuando sean relevantes.
-                    - Propuestas de planes de acción concretos y viables.
-                    - Impacto de las recomendaciones en la prevención de eventos futuros.
-
-                    Consideraciones para el análisis:
-                    - No es obligatorio llegar a cinco "porqués" si la causa raíz es clara antes.
-                    - Evitar explicaciones genéricas sin evidencia.
-                    - Incluir factores externos cuando sean aplicables.
-                    - Usar detalles específicos del evento (matrícula, códigos de pallet, ubicación, etc.).
-                    - Relatar la secuencia cronológica del incidente para reflejar su evolución.
-
-                    Ejemplos previos de análisis:
-                    {ejemplos_similares}
-
-                    Manual de procedimiento aplicable al incidente:
-                    {manuales}
-
-                    Evento a analizar:
-                    {descripcion_hallazgo}
-
-                    Selecciona la causa raíz más adecuada de la siguiente lista:
-                    {causas_raiz}
-
-                    Instrucciones para el análisis:
-                    1. Identifica la causa raíz sin forzar la aplicación mecánica de los “5 Porqués”.
-                    2. Explica cada paso de forma lógica, vinculando cada nivel con el anterior.
-                    3. Incluye factores externos si son relevantes.
-                    4. Relata la evolución del incidente de forma estructurada.
-                    5. Propón de 1 a 3 planes de acción concretos y medibles.
-                    6. Concluye con un breve resumen de las causas principales identificadas.
-                    7. **Responde en el formato exacto siguiente:**
-
-                    Formato de salida:
-
-                    Análisis de los 5 Porqués:
-
-                    - Por qué 1: [Pregunta sobre el evento y primera causa directa.]
-                    - Por qué 2: [Pregunta sobre la respuesta anterior y causa más profunda.]
-                    - Por qué 3: [Si es necesario, continuar el análisis.]
-                    - Por qué 4: [Si aún no se identifica la causa raíz, profundizar más.]
-                    - Por qué 5: [Último nivel si es necesario.]
-
-                    Causa raíz:
-                    [Causa raíz seleccionada de la lista.]
-
-                    Conclusión:
-                    [Resumen de la evolución del evento y los principales factores contribuyentes.]
-
-                    Plan de acción:
-                    
-                    - 1. [Acción correctiva específica basada en la causa real.]
-                    - 2. [Cambio en procedimiento, si es necesario.]
-                    - 3. [Recomendación adicional para evitar futuras ocurrencias.]
-
-                    Si no es necesario un plan de acción:
-                    No se requiere un plan de acción porque el evento fue causado por [explicación detallada].
-
-                    """
+                    system_prompt
                 ),
                 (
                     "human",
-                    "Evalúa el evento e identifica la causa raíz real del incidente mediante un análisis lógico y progresivo, sin forzar cinco porqués si no son necesarios, y definir planes de acción para corregir y prevenir eventos."
+                    human_prompt
                 ),
             ]
         )
@@ -285,44 +382,149 @@ def apply_feedback(item):
     - str: Respuesta corregida basada en el feedback.
     """
     llm = ChatOpenAI(
-        model="gpt-4o-mini",
+        model=open_ai_model,
         api_key=openai_api_key,
         max_tokens=2000,
         temperature=0.1
     )
 
+    # system_prompt = """
+    # Tienes que corregir y mejorar la siguiente respuesta que incluye ejemplos previos, evento, análisis de causa, causa raíz y plan de acción. Sigue estas instrucciones cuidadosamente:
+
+    #             - Mantén el **formato de la respuesta exactamente como está**, respetando la numeración y la estructura. **No se debe omitir ninguna sección**.
+    #             - La respuesta debe incluir todas las secciones en este **orden exacto**: 
+    #                 - Ejemplos previos:
+    #                 - Evento:
+    #                 - Análisis de los 5 Porqués:
+    #                 - Por qué 1:
+    #                 - Por qué 2:
+    #                 - Por qué 3:
+    #                 - Por qué 4:
+    #                 - Por qué 5:
+    #                 - Causa raíz:
+    #                 - Conclusión:
+    #                 - Plan de acción:
+                
+    #             - **No modifiques los ejemplos previos**. Estos deben permanecer exactamente como están, sin cambios.
+    #             - Si el feedback menciona cambios en un "Por qué" específico (por ejemplo, "modificar Por qué 2"), **solo modifica esa parte y deja los demás "Por qué" sin cambios**.
+    #             - Si el feedback menciona cambios en la "Causa raíz", **realiza la modificación solo en esa sección** según lo indicado en el feedback.
+    #             - Si el feedback menciona cambios en el "Plan de acción", **aplícalos solo a esa sección**, sin modificar el análisis de causa ni la conclusión.
+    #             - Si el feedback menciona cambios en la "Conclusión", **realiza solo esas modificaciones** y deja el resto de la respuesta intacto.
+    #             - Si no se mencionan cambios para un "Por qué", "Plan de acción", "Causa raíz" o "Conclusión", **no los modifiques**.
+    #             - Asegúrate de mantener **la estructura exacta** de la respuesta, **sin agregar ni eliminar elementos**, y **sin alterar el orden**.
+
+    #             Respuesta Original: {original_response}
+    #             Feedback: {feedback}
+    # """
+
+    system_prompt="""
+    Objetivo:
+    Generar correcciones y mejoras sobre una respuesta que contiene ejemplos previos, evento, análisis de causa, causa raíz y plan de acción. 
+    El feedback debe garantizar que el análisis sea preciso, rastreable y basado en la lista oficial de causas raíz.
+
+    Instrucciones Detalladas:
+
+    - Mantén el formato exacto de la respuesta original.
+    - Respetar la numeración y estructura.
+    - No omitir ninguna sección.
+    - Estructura de la respuesta corregida:
+
+    Análisis de los 5 Porqués:
+
+    [Solo modificar si el feedback lo indica]
+    
+    Causa raíz: (Modificar solo si el feedback lo menciona)
+
+    Conclusión: (Modificar solo si el feedback lo menciona)
+
+    Plan de acción: (Modificar solo si el feedback lo menciona)
+
+    Corrección de errores en la respuesta:
+
+    - Si se identifica una causa raíz que no pertenece a la lista oficial, corregirla.
+    - Si un "Por qué" es demasiado genérico o carece de evidencia operativa, ajustar la explicación.
+    - Si el plan de acción no está alineado con el análisis de los 5 Porqués, corregirlo.
+
+    Asegurar rastreabilidad:
+
+    - Cada "Por qué" debe estar claramente conectado con el anterior.
+    - El plan de acción debe estar directamente vinculado con la causa raíz.
+
+    Rechazo de análisis incorrecto:
+
+    - Si la respuesta incluye una causa fuera de la lista oficial, corregirla y justificar el cambio.
+    - Si el análisis es vago (ej.: "error humano" sin contexto), reformularlo con base en datos operativos.
+    - Si las acciones propuestas son genéricas (ej.: "reforzar supervisión" sin detalle), hacerlas medibles.
+
+    Formato de Feedback Generado:
+
+    Corrección de Respuesta:
+
+    [Generación corregida basado en el feedback]
+
+    Se aplicaron las siguientes modificaciones:
+
+    Por qué X: Se ajustó para incluir evidencia operativa relevante.
+    Causa raíz: Se corrigió para alinearse con la lista oficial.
+    Plan de acción: Se reformuló para ser más rastreable y medible.
+
+    Resumen de Ajustes:
+
+    [Descripción breve de los cambios y justificación basada en el análisis lógico]
+
+    Nuevo informe generado:
+
+    [informe completo con las correcciones aplicadas]
+
+    Ejemplo de Feedback Aplicado:
+
+    Corrección de Respuesta:
+
+    Por qué 3: Modificado de "El operador no estaba familiarizado con el procedimiento" a "El operador, con solo 3 días en el turno nocturno, no recibió la capacitación en T-7 debido a una urgencia en la asignación de personal".
+
+    Causa raíz: Se cambió de "Falta de supervisión" a "Capacitación incompleta en procedimientos críticos".
+
+    Plan de acción: Se reemplazó "Reforzar supervisión en turno nocturno" por "Auditoría semanal de capacitaciones pendientes en turnos nocturnos".
+
+    Resumen de Ajustes:
+    La respuesta original identificaba una causa raíz no oficial y proponía un plan de acción genérico. Se corrigieron estos puntos para asegurar rastreabilidad y precisión.
+
+    Nuevo informe generado:
+
+    [informe completo con las correcciones aplicadas]
+    """
+
+    human_prompt="""
+    Este fue el informe que se genero anteriormente:
+
+    ###################
+    Informe inicial:
+    {original_response}
+    ###################
+
+    Usa este evento historico como referencia:
+
+    ###################
+    Informe historico de referencia:
+    {informe_ejemplo}
+    ###################
+
+    Usa este feedback para mejorar el informe: 
+
+    ###################
+    Feedback:
+    {feedback}
+    ###################
+
+    Piensa tu respuesta paso a paso
+    """
+    
+    
     # Se crea el prompt asegurando que la estructura exacta debe ser mantenida
     prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", """
-                Tienes que corregir y mejorar la siguiente respuesta que incluye ejemplos previos, evento, análisis de causa, causa raíz y plan de acción. Sigue estas instrucciones cuidadosamente:
-
-                - Mantén el **formato de la respuesta exactamente como está**, respetando la numeración y la estructura. **No se debe omitir ninguna sección**.
-                - La respuesta debe incluir todas las secciones en este **orden exacto**: 
-                    - Ejemplos previos:
-                    - Evento:
-                    - Análisis de los 5 Porqués:
-                    - Por qué 1:
-                    - Por qué 2:
-                    - Por qué 3:
-                    - Por qué 4:
-                    - Por qué 5:
-                    - Causa raíz:
-                    - Conclusión:
-                    - Plan de acción:
-                
-                - **No modifiques los ejemplos previos**. Estos deben permanecer exactamente como están, sin cambios.
-                - Si el feedback menciona cambios en un "Por qué" específico (por ejemplo, "modificar Por qué 2"), **solo modifica esa parte y deja los demás "Por qué" sin cambios**.
-                - Si el feedback menciona cambios en la "Causa raíz", **realiza la modificación solo en esa sección** según lo indicado en el feedback.
-                - Si el feedback menciona cambios en el "Plan de acción", **aplícalos solo a esa sección**, sin modificar el análisis de causa ni la conclusión.
-                - Si el feedback menciona cambios en la "Conclusión", **realiza solo esas modificaciones** y deja el resto de la respuesta intacto.
-                - Si no se mencionan cambios para un "Por qué", "Plan de acción", "Causa raíz" o "Conclusión", **no los modifiques**.
-                - Asegúrate de mantener **la estructura exacta** de la respuesta, **sin agregar ni eliminar elementos**, y **sin alterar el orden**.
-
-                Respuesta Original: {original_response}
-                Feedback: {feedback}
-            """),
-            ("human", "{original_response}\n{feedback}")
+            ("system", system_prompt),
+            ("human", human_prompt)
         ]
     )
 
@@ -330,7 +532,7 @@ def apply_feedback(item):
     chain = prompt | llm
 
     # Invocamos el modelo para procesar la respuesta con el feedback
-    response = chain.invoke({"original_response": item["response"], "feedback": item["feedback"]})
+    response = chain.invoke({"original_response": item["response"], "feedback": item["feedback"], "informe_ejemplo": item["ejemplos_similares"]})
     
     # Regresamos el contenido corregido
     return response.content

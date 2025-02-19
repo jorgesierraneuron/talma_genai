@@ -285,9 +285,9 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
 
         Ejemplo Válido (Segmento):
         Análisis de los 5 Porqués:  
-        - Por qué 1: El pallet PF-789 se dañó durante la carga en Doca 5 (14:30).  
-        - Por qué 2: El operador no usó la guía de carga del Manual T-7.  
-        - Por qué 3: El operador ingresó hace 3 días y no recibió capacitación en T-7 por urgencia en turno nocturno.  
+        - Porque ocurrio el incidente?: El pallet PF-789 se dañó durante la carga en Doca 5 (14:30).  
+        - Porque el pallet PF-789 se daño durante la carga?: El operador no usó la guía de carga del Manual T-7.  
+        - Porque el operador no uso la guia del Manual T-7?: El operador ingresó hace 3 días y no recibió capacitación en T-7 por urgencia en turno nocturno.  
         Causa Raíz: "Capacitación incompleta en procedimientos críticos".  
         Plan de Acción:  
         - 1. Auditoría semanal de capacitaciones pendientes en turnos nocturnos (Registro en SAP).
@@ -299,6 +299,7 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
 
         Priorizar datos de la descripción: Si el evento menciona "retraso en el parqueo a las 20:00", el análisis debe integrar hora y ubicación.
         Causas oficiales: Solo usar términos estandarizados (ej.: "Falla en protocolo de seguridad" ➔ no "Error en paso 3 del protocolo").
+        Usar incidentes historicos como referencia, si solo presentan un plan de acción, generar solo un plan de acción, siempre siguiente la estrutura y analisis de incidentes historicos
         """
 
         human_prompt="""

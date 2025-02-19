@@ -429,6 +429,8 @@ def apply_feedback(item):
     - Mantén el formato exacto de la respuesta original.
     - Respetar la numeración y estructura.
     - No omitir ninguna sección.
+    - No debes hacer modificaciones sobre la causa raiz a menos que el feedback asi lo indique.
+    - No aumentes el numero de planes de acción, si es necesario complementa los ya existentes.
     - Estructura de la respuesta corregida:
 
     Análisis de los 5 Porqués:
@@ -474,10 +476,6 @@ def apply_feedback(item):
 
     [Descripción breve de los cambios y justificación basada en el análisis lógico]
 
-    Nuevo informe generado:
-
-    [informe completo con las correcciones aplicadas]
-
     Ejemplo de Feedback Aplicado:
 
     Corrección de Respuesta:
@@ -490,10 +488,6 @@ def apply_feedback(item):
 
     Resumen de Ajustes:
     La respuesta original identificaba una causa raíz no oficial y proponía un plan de acción genérico. Se corrigieron estos puntos para asegurar rastreabilidad y precisión.
-
-    Nuevo informe generado:
-
-    [informe completo con las correcciones aplicadas]
     """
 
     human_prompt="""

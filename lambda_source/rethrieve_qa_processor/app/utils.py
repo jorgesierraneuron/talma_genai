@@ -285,7 +285,7 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
 
         Ejemplo Válido (Segmento):
         Análisis de los 5 Porqués:  
-        - Porque ocurrio el incidente?: El pallet PF-789 se dañó durante la carga en Doca 5 (14:30).  
+        - Porque no se realizo la carga correcta de la aeronave?: El pallet PF-789 se dañó durante la carga en Doca 5 (14:30).  
         - Porque el pallet PF-789 se daño durante la carga?: El operador no usó la guía de carga del Manual T-7.  
         - Porque el operador no uso la guia del Manual T-7?: El operador ingresó hace 3 días y no recibió capacitación en T-7 por urgencia en turno nocturno.  
         Causa Raíz: "Capacitación incompleta en procedimientos críticos".  

@@ -303,6 +303,7 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
         Causas oficiales: Solo usar términos estandarizados (ej.: "Falla en protocolo de seguridad" ➔ no "Error en paso 3 del protocolo").
         Usar incidentes historicos como referencia, si solo presentan un plan de acción, generar solo un plan de acción, siempre siguiente la estrutura y analisis de incidentes historicos.
         No incluyas ningun tipo de fecha o responsables en los planes de acción
+        Los planes de acción deben ser entre 1 y 4, priorizar 1 plan de acción relacionado con la causa raiz, máximo 4, pero priorizando siempre un plan de acción que mitigue el problema de base
         En caso que la causa raiz del incidente historico sea no procede no la tenga en cuenta en tu generación como ejemplo.
         """
 

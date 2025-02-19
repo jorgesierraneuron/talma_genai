@@ -516,6 +516,13 @@ def apply_feedback(item):
     {feedback}
     ###################
 
+    Esta es la lista de causas raices de la que debes escoger, solo debes escoger una de las indicadas de la lista:
+
+    ##########################
+    Causas raices:
+    {causas_raiz}
+    ##########################
+
     Piensa tu respuesta paso a paso
     """
     
@@ -532,7 +539,9 @@ def apply_feedback(item):
     chain = prompt | llm
 
     # Invocamos el modelo para procesar la respuesta con el feedback
-    response = chain.invoke({"original_response": item["response"], "feedback": item["feedback"], "informe_ejemplo": item["ejemplos_similares"]})
+    response = chain.invoke({"original_response": item["response"], "feedback": item["feedback"], 
+                             "informe_ejemplo": item["ejemplos_similares"],
+                             "causas_raiz": item["causa_raiz"]})
     
     # Regresamos el contenido corregido
     return response.content

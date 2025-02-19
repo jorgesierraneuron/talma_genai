@@ -269,8 +269,8 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
         Formato de Salida (Estricto):
 
         Análisis de los 5 Porqués:  
-        - Por qué 1: [Causa directa + dato operativo relevante (ej.: hora, ubicación)]  
-        - Por qué 2: [Causa subyacente + factor contextual (ej.: turno corto de personal)]  
+        - Por qué 1 [Pregunta]: [Causa directa + dato operativo relevante (ej.: hora, ubicación)]  
+        - Por qué 2 [Pregunta]: [Causa subyacente + factor contextual (ej.: turno corto de personal)]  
         ... (continuar solo si es necesario)  
 
         Causa Raíz:  

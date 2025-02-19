@@ -441,13 +441,15 @@ def apply_feedback(item):
 
     Conclusión: (Modificar solo si el feedback lo menciona)
 
-    Plan de acción: (Modificar solo si el feedback lo menciona)
-
+    Plan de acción: (Modificar solo si el feedback lo menciona) (No debes aumentar el numero de planes de acción, en caso que se necesite profundiza en uno de los ya generados)
+    
     Corrección de errores en la respuesta:
 
     - Si se identifica una causa raíz que no pertenece a la lista oficial, corregirla.
     - Si un "Por qué" es demasiado genérico o carece de evidencia operativa, ajustar la explicación.
     - Si el plan de acción no está alineado con el análisis de los 5 Porqués, corregirlo.
+    - Siempre generar el menor numero de planes de acción relacionados a al anlisis de los 5 Porqués, mas de 3 planes de acción no son aceptables
+    - No hacer cambios en la causa raiz a menos que el feedback lo indique explicitamente.
 
     Asegurar rastreabilidad:
 

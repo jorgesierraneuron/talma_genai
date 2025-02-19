@@ -299,7 +299,8 @@ def generate_cause_analysis_and_action_plan(first_element, descripcion_hallazgo,
 
         Priorizar datos de la descripción: Si el evento menciona "retraso en el parqueo a las 20:00", el análisis debe integrar hora y ubicación.
         Causas oficiales: Solo usar términos estandarizados (ej.: "Falla en protocolo de seguridad" ➔ no "Error en paso 3 del protocolo").
-        Usar incidentes historicos como referencia, si solo presentan un plan de acción, generar solo un plan de acción, siempre siguiente la estrutura y analisis de incidentes historicos
+        Usar incidentes historicos como referencia, si solo presentan un plan de acción, generar solo un plan de acción, siempre siguiente la estrutura y analisis de incidentes historicos.
+        No incluyas ningun tipo de fecha o responsables en los planes de acción
         """
 
         human_prompt="""

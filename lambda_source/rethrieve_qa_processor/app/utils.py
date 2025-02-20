@@ -438,13 +438,11 @@ def apply_feedback(item):
     - No aumentes el numero de planes de acción, si es necesario complementa los ya existentes.
     - Estructura de la respuesta corregida:
 
-    Análisis de los 5 Porqués:
-
-    [Solo modificar si el feedback lo indica]
+    Análisis de los 5 Porqués: [Solo modificar si el feedback lo indica]
     
-    Causa raíz: (Modificar solo si el feedback lo menciona)
+    Causa raíz: [Solo modificar si el feedback lo indica]
 
-    Conclusión: (Modificar solo si el feedback lo menciona)
+    Conclusión: [Solo modificar si el feedback lo indica]
 
     Plan de acción: (Modificar solo si el feedback lo menciona) (No debes aumentar el numero de planes de acción, en caso que se necesite profundiza en uno de los ya generados)
     
@@ -452,6 +450,7 @@ def apply_feedback(item):
 
     - Si se identifica una causa raíz que no pertenece a la lista oficial, corregirla.
     - Si un "Por qué" es demasiado genérico o carece de evidencia operativa, ajustar la explicación.
+    - Si se debe agregar mas contexto a uno de los porques, ajusta.
     - Si el plan de acción no está alineado con el análisis de los 5 Porqués, corregirlo.
     - Siempre generar el menor numero de planes de acción relacionados a al anlisis de los 5 Porqués, mas de 3 planes de acción no son aceptables
     - No hacer cambios en la causa raiz a menos que el feedback lo indique explicitamente.
@@ -471,13 +470,16 @@ def apply_feedback(item):
 
     Corrección de Respuesta:
 
-    [Generación corregida basado en el feedback]
+    [Generación corregida basado en el feedback, incluyendo analisis 5 porques corregidos en caso necesario, causa raiz recategorizada en caso necesario, plan de acciòn corregido en caso necesario]
 
+    
     Se aplicaron las siguientes modificaciones:
 
-    Por qué X: Se ajustó para incluir evidencia operativa relevante.
+    Analisis 5 porques: Se ajustó para incluir evidencia operativa relevante.
     Causa raíz: Se corrigió para alinearse con la lista oficial.
     Plan de acción: Se reformuló para ser más rastreable y medible.
+
+    Nota: No debes agregar algo que no has modificado 
 
     Resumen de Ajustes:
 
@@ -487,7 +489,9 @@ def apply_feedback(item):
 
     Corrección de Respuesta:
 
-    Por qué 3: Modificado de "El operador no estaba familiarizado con el procedimiento" a "El operador, con solo 3 días en el turno nocturno, no recibió la capacitación en T-7 debido a una urgencia en la asignación de personal".
+    [Generación corregida]
+
+    Analisis 5 porques: Modificado de "El operador no estaba familiarizado con el procedimiento" a "El operador, con solo 3 días en el turno nocturno, no recibió la capacitación en T-7 debido a una urgencia en la asignación de personal".
 
     Causa raíz: Se cambió de "Falta de supervisión" a "Capacitación incompleta en procedimientos críticos".
 

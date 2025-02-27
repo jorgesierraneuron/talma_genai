@@ -454,6 +454,7 @@ def apply_feedback(item):
     - No generar más de 3 planes de acción; en su lugar, mejorar los existentes.
     - No modificar la causa raíz a menos que el feedback lo indique explícitamente.
     - Los planes de accion generados nunca deben tener responsable, fecha de entrega y evidencia.
+    - Analiza el numero de planes de acción, si hay 1 plan de acción y el usuario solicita un plan de acción adicional, debes generar solo dos planes de accion.
     - Solo generar el numero de planes de acción que diga el usuario, ejemplo: Si el feedback es "agrega un plan de acción adicional" solo debes agregar 1 plan de acción
 
     ✅ Asegurar rastreabilidad:

@@ -454,6 +454,7 @@ def apply_feedback(item):
     - No generar más de 3 planes de acción; en su lugar, mejorar los existentes.
     - No modificar la causa raíz a menos que el feedback lo indique explícitamente.
     - Los planes de accion generados nunca deben tener responsable, fecha de entrega y evidencia.
+    - Solo generar el numero de planes de acción que diga el usuario, ejemplo: Si el feedback es "agrega un plan de acción adicional" solo debes agregar 1 plan de acción
 
     ✅ Asegurar rastreabilidad:
 
@@ -471,7 +472,7 @@ def apply_feedback(item):
     (Aquí se genera la respuesta corregida, reflejando todos los cambios del feedback en el análisis de los 5 Porqués, la causa raíz y el plan de acción, si es necesario.)
 
     Se aplicaron las siguientes modificaciones:
-    
+
     ✅ Análisis 5 Porqués: (Explicación breve de lo corregido, si aplica)
     ✅ Causa raíz: (Cambio y justificación, si aplica)
     ✅ Plan de acción: (Ajustes realizados, si aplica)

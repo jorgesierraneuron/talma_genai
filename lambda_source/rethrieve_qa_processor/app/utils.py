@@ -432,73 +432,50 @@ def apply_feedback(item):
     Instrucciones Detalladas:
 
     - Mantén el formato exacto de la respuesta original.
-    - Respetar la numeración y estructura.
-    - No omitir ninguna sección.
-    - No debes hacer modificaciones sobre la causa raiz a menos que el feedback asi lo indique.
-    - No aumentes el numero de planes de acción, si es necesario complementa los ya existentes.
-    - Estructura de la respuesta corregida:
+    - Respetar la numeración y estructura de la respuesta.
+    - No omitir ninguna sección de la respuesta original.
+    - No debes modificar la causa raíz a menos que el feedback así lo indique.
+    - No aumentar el número de planes de acción. Si es necesario, complementar o ajustar los ya existentes.
 
-    Análisis de los 5 Porqués: [Solo modificar si el feedback lo indica]
-    
-    Causa raíz: [Solo modificar si el feedback lo indica]
+    Estructura de la respuesta corregida:
 
-    Conclusión: [Solo modificar si el feedback lo indica]
+    1. Análisis de los 5 Porqués: (Solo modificar si el feedback lo indica, asegurando trazabilidad y evidencia operativa)
+    2. Causa raíz: (Modificar solo si el feedback lo indica y asegurando alineación con la lista oficial de causas raíz)
+    3. Conclusión: (Modificar solo si el feedback lo indica)
+    4. Plan de acción: (Modificar solo si el feedback lo menciona. No agregar más planes de acción, sino mejorar los existentes.)
 
-    Plan de acción: (Modificar solo si el feedback lo menciona) (No debes aumentar el numero de planes de acción, en caso que se necesite profundiza en uno de los ya generados)
-    
-    Corrección de errores en la respuesta:
+    Criterios de Corrección:
+    ✅ Corrección de errores en la respuesta:
 
-    - Si se identifica una causa raíz que no pertenece a la lista oficial, corregirla.
-    - Si un "Por qué" es demasiado genérico o carece de evidencia operativa, ajustar la explicación.
-    - Si se debe agregar mas contexto a uno de los porques, ajusta.
+    - Si la causa raíz no está en la lista oficial, corregirla.
+    - Si un "Por qué" es demasiado genérico o sin evidencia, detallarlo.
+    - Si un Por qué necesita más contexto, ajustarlo.
     - Si el plan de acción no está alineado con el análisis de los 5 Porqués, corregirlo.
-    - Siempre generar el menor numero de planes de acción relacionados a al anlisis de los 5 Porqués, mas de 3 planes de acción no son aceptables
-    - No hacer cambios en la causa raiz a menos que el feedback lo indique explicitamente.
+    - No generar más de 3 planes de acción; en su lugar, mejorar los existentes.
+    - No modificar la causa raíz a menos que el feedback lo indique explícitamente.
 
-    Asegurar rastreabilidad:
+    ✅ Asegurar rastreabilidad:
 
     - Cada "Por qué" debe estar claramente conectado con el anterior.
-    - El plan de acción debe estar directamente vinculado con la causa raíz.
+    - El plan de acción debe vincularse directamente con la causa raíz.
 
-    Rechazo de análisis incorrecto:
+    ✅ Rechazo de análisis incorrecto:
 
-    - Si la respuesta incluye una causa fuera de la lista oficial, corregirla y justificar el cambio.
-    - Si el análisis es vago (ej.: "error humano" sin contexto), reformularlo con base en datos operativos.
-    - Si las acciones propuestas son genéricas (ej.: "reforzar supervisión" sin detalle), hacerlas medibles.
+    - Si la causa raíz está fuera de la lista oficial, corregirla y justificar el cambio.
+    - Si el análisis es vago o genérico (ej.: "error humano" sin contexto), reformularlo con datos operativos.
+    - Si el plan de acción es demasiado genérico (ej.: "reforzar supervisión" sin detalle), hacerlo medible y rastreable.
 
     Formato de Feedback Generado:
-
     Corrección de Respuesta:
+    (Aquí se genera la respuesta corregida, reflejando todos los cambios del feedback en el análisis de los 5 Porqués, la causa raíz y el plan de acción, si es necesario.)
 
-    [Generación corregida basado en el feedback, incluyendo analisis 5 porques corregidos en caso necesario, causa raiz recategorizada en caso necesario, plan de acciòn corregido en caso necesario]
-
-    
     Se aplicaron las siguientes modificaciones:
-
-    Analisis 5 porques: Se ajustó para incluir evidencia operativa relevante.
-    Causa raíz: Se corrigió para alinearse con la lista oficial.
-    Plan de acción: Se reformuló para ser más rastreable y medible.
-
-    Nota: No debes agregar algo que no has modificado 
+    ✅ Análisis 5 Porqués: (Explicación breve de lo corregido, si aplica)
+    ✅ Causa raíz: (Cambio y justificación, si aplica)
+    ✅ Plan de acción: (Ajustes realizados, si aplica)
 
     Resumen de Ajustes:
-
-    [Descripción breve de los cambios y justificación basada en el análisis lógico]
-
-    Ejemplo de Feedback Aplicado:
-
-    Corrección de Respuesta:
-
-    [Generación corregida]
-
-    Analisis 5 porques: Modificado de "El operador no estaba familiarizado con el procedimiento" a "El operador, con solo 3 días en el turno nocturno, no recibió la capacitación en T-7 debido a una urgencia en la asignación de personal".
-
-    Causa raíz: Se cambió de "Falta de supervisión" a "Capacitación incompleta en procedimientos críticos".
-
-    Plan de acción: Se reemplazó "Reforzar supervisión en turno nocturno" por "Auditoría semanal de capacitaciones pendientes en turnos nocturnos".
-
-    Resumen de Ajustes:
-    La respuesta original identificaba una causa raíz no oficial y proponía un plan de acción genérico. Se corrigieron estos puntos para asegurar rastreabilidad y precisión.
+    (Explicación clara de qué cambios se hicieron y por qué, asegurando coherencia con el análisis lógico.)
     """
 
     human_prompt="""

@@ -23,11 +23,13 @@ phases:
       # - aws s3 cp s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/local_processor $LOCAL_DOWNLOAD_PATH/local_processor --recursive
 
   build:
-    commands:
-      - echo "Executing deploy.sh script..."
-      - chmod +x ./deploy.sh
+  commands:
+      - echo "Debugging deploy.sh execution..."
+      - cat deploy.sh
+      - ls -l deploy.sh
+      - file deploy.sh
+      - chmod +x deploy.sh
       - ./deploy.sh -dev
-
   post_build:
     commands:
       - echo "Deployment completed successfully."

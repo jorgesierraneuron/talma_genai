@@ -1,0 +1,8 @@
+env                     = "dev"
+app_prefix              = "TalmaAI"
+ecr_repo_name           = "${app_prefix}-repo-${env}"
+dynamodb_table_name     = "${app_prefix}-table-${env}"
+dynamodb_billing_mode   = "PAY_PER_REQUEST"
+dynamodb_partition_key  = "id"
+dynamodb_partition_key_type = "S"
+artifacts_bucket_name   = "${app_prefix}-artifacts-${env}"

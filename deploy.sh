@@ -1,10 +1,22 @@
 #!/bin/bash
 set -e
 
+# Verificar si se proporcionó un argumento
+if [ -z "$1" ]; then
+  echo "Uso: $0 <env>"
+  exit 1
+fi
+
+# Validar que el entorno sea -dev, -test o -prod
+if [[ "$1" != "dev" && "$1" != "test" && "$1" != "prod" ]]; then
+  echo "Error: El entorno debe ser 'dev', 'test' o 'prod'."
+  exit 1
+fi
+
 # Configuración
-ENV="dev"
+ENV="$1"
 AWS_REGION="us-east-1"
-ECR_REPO_NAME="lambda-container-repo"
+ECR_REPO_NAME="talmaai-docker-repo-${ENV}"
 DOCKER_TAG_RETHRIEVE_QA_ENDPOINT="rethrieve_qa_endpoint_${ENV}"
 DOCKER_TAG_RETHRIEVE_QA_PROCESSOR="rethrieve_qa_processor_${ENV}"
 DOCKER_TAG_JSON_TO_KNOWLEDGE="json_to_knowledge_${ENV}"

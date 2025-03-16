@@ -1,3 +1,31 @@
+# Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Crash logs
+crash.log
+
+# Terraform lock files
+.terraform/
+.terraform.lock.hcl
+
+# Ignore sensitive variable files
+# *.tfvars
+# *.tfvars.json
+
+# Ignore override files (local configurations)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore plan output files
+*.tfplan
+
+# Ignore generated .terraformrc and credentials
+.terraformrc
+terraform.rc
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -176,8 +204,8 @@ crash.*.log
 # password, private keys, and other secrets. These should not be part of version 
 # control as they are data points which are potentially sensitive and subject 
 # to change depending on the environment.
-*.tfvars
-*.tfvars.json
+# *.tfvars
+# *.tfvars.json
 
 # Ignore override files as they are usually used to override resources locally and so
 # are not checked in

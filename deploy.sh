@@ -3,15 +3,21 @@ set -e
 
 # Verificar si se proporcionó un argumento
 if [ -z "$1" ]; then
-  echo "Uso: $0 <env>"
+  echo "Uso: $0 -dev | -test | -prod"
   exit 1
 fi
 
 # Validar que el entorno sea -dev, -test o -prod
-if [[ "$1" != "dev" && "$1" != "test" && "$1" != "prod" ]]; then
-  echo "Error: El entorno debe ser 'dev', 'test' o 'prod'."
+if [[ "$1" != "-dev" && "$1" != "-test" && "$1" != "-prod" ]]; then
+  echo "Error: El entorno debe ser '-dev', '-test' o '-prod'."
   exit 1
 fi
+
+# Eliminar el '-' y guardar en la variable env
+ENV="${1#-}"
+
+echo "Entorno seleccionado: $env"
+
 
 # Configuración
 ENV="$1"

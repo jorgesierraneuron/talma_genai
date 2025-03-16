@@ -16,11 +16,10 @@ fi
 # Eliminar el '-' y guardar en la variable env
 ENV="${1#-}"
 
-echo "Entorno seleccionado: $env"
+echo "Entorno seleccionado: $ENV"
 
 
 # Configuración
-ENV="$1"
 AWS_REGION="us-east-1"
 ECR_REPO_NAME="talmaai-docker-repo-${ENV}"
 DOCKER_TAG_RETHRIEVE_QA_ENDPOINT="rethrieve_qa_endpoint_${ENV}"

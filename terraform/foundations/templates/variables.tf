@@ -33,3 +33,8 @@ variable "artifacts_bucket_name" {
   description = "S3 bucket name for Terraform state storage"
   type        = string
 }
+
+variable "app_prefix" {
+  description = "prefix para identificar los recursos en aws"
+  type        = string
+}

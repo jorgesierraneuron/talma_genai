@@ -36,6 +36,9 @@ sed -i "s/^env = \".*\"/env = \"$ENV\"/" terraform.tfvars
 terraform init
 
 # Apply Terraform configuration
-terraform apply -var-file=terraform.tfvars -auto-approve
-
-echo "Terraform deployment for $ENV completed successfully!"
+if terraform apply -var-file=terraform.tfvars -auto-approve; then
+  echo "Terraform deployment for $ENV completed successfully!"
+else
+  echo "Terraform deployment for $ENV failed!"
+  exit 1
+fi

@@ -1,22 +1,33 @@
 #!/bin/bash
-set -e
 
-# Verificar si se proporcionó un argumento
-if [ -z "$1" ]; then
-  echo "Uso: $0 -dev | -test | -prod"
+# Usage: ./deploy.sh -dev/-test/-prod
+
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 -dev | -test | -prod"
   exit 1
 fi
 
-# Validar que el entorno sea -dev, -test o -prod
-if [[ "$1" != "-dev" && "$1" != "-test" && "$1" != "-prod" ]]; then
-  echo "Error: El entorno debe ser '-dev', '-test' o '-prod'."
-  exit 1
-fi
-
-# Eliminar el '-' y guardar en la variable env
-ENV="${1#-}"
+# Extract environment
+case "$1" in
+  -dev)
+    ENV="dev"
+    ;;
+  -test)
+    ENV="test"
+    ;;
+  -prod)
+    ENV="prod"
+    ;;
+  *)
+    echo "Invalid option: $1. Use -dev, -test, or -prod"
+    exit 1
+    ;;
+esac
 
 echo "Entorno seleccionado: $ENV"
+
+
+
 
 
 # Configuración
@@ -77,11 +88,20 @@ function deploy_terraform() {
   echo "Inicializando Terraform..."
   cd ./terraform || { echo "Error: No se pudo acceder al directorio ./terraform"; exit 1; }
 
-  echo "Ejecutando terraform init..."
-  terraform init || { echo "Error: terraform init falló"; exit 1; }
+  echo "Update terraform in env: $ENV"
 
-  echo "Ejecutando terraform plan..."
-  terraform plan -out=tfplan || { echo "Error: terraform plan falló"; exit 1; }
+  # Detect OS and use the correct sed command
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "s/^env = \".*\"/env = \"$ENV\"/" terraform.tfvars  # macOS version
+  else
+    sed -i "s/^env = \".*\"/env = \"$ENV\"/" terraform.tfvars  # Linux version
+  fi
+
+  echo "Ejecutando terraform init..."
+  terraform init -reconfigure || { echo "Error: terraform init falló"; exit 1; }
+
+  echo "Ejecutando terraform plan con variables..."
+  terraform plan -var-file=terraform.tfvars -out=tfplan || { echo "Error: terraform plan falló"; exit 1; }
 
   echo "Aplicando infraestructura con terraform apply..."
   terraform apply -auto-approve tfplan || { echo "Error: terraform apply falló"; exit 1; }
@@ -91,5 +111,5 @@ function deploy_terraform() {
 
 
 # Ejecutar
-upload_to_ecr
-#deploy_terraform
+#upload_to_ecr
+deploy_terraform

@@ -5,20 +5,26 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
+# Región de AWS
+variable "aws_account_id" {
+  description = "Región de AWS donde se desplegará la infraestructura"
+  type        = string
+  default     = "911167907421"
+}
+
+# Ambiente de despliegue (dev, test, prod)
 variable "environment" {
   description = "Ambiente de despliegue"
   type        = string
   default     = "dev"
 }
 
-
 # Nombre del repositorio ECR
-variable "ecr_repo_name" {
-  description = "Nombre del repositorio ECR"
+variable "ecr_repository_url" {
+  description = "URL del repositorio ECR"
   type        = string
-  default     = "lambda-container-repo"
+  default     = "123456789012.dkr.ecr.us-east-1.amazonaws.com/my-repo"
 }
-
 
 # Nombre del rol IAM para Lambda
 variable "lambda_role_name" {
@@ -27,35 +33,44 @@ variable "lambda_role_name" {
   default     = "lambda_execution_role"
 }
 
-# Configuración de Lambda Clean Files
-variable "rethrieve_qa_name" {
-  description = "Nombre de la función Lambda para rethrieve_qa"
+# Configuración de SQS
+variable "sqs_queue_name" {
+  description = "Nombre de la cola SQS que desencadena Lambda"
   type        = string
-  default     = "rethrieve_qa"
+  default     = "lambda-sqs-queue"
 }
 
-variable "rethrieve_qa_timeout" {
-  description = "Tiempo máximo de ejecución para clean-files Lambda"
+# Configuración de Lambda Rethrieve QA Endpoint
+variable "rethrieve_qa_endpoint_name" {
+  description = "Nombre de la función Lambda para rethrieve_qa_endpoint"
+  type        = string
+  default     = "rethrieve_qa_endpoint"
+}
+
+# Configuración de Lambda Rethrieve QA Processor
+variable "rethrieve_qa_processor_name" {
+  description = "Nombre de la función Lambda para rethrieve_qa_processor"
+  type        = string
+  default     = "rethrieve_qa_processor"
+}
+
+# Tiempo de ejecución máximo para Lambdas
+variable "lambda_timeout" {
+  description = "Tiempo máximo de ejecución para las funciones Lambda"
   type        = number
-  default     = 120
+  default     = 60
 }
 
-# Configuración de Lambda Convert JSON
-variable "json_to_knowledge_name" {
-  description = "Nombre de la función Lambda para convertir JSON"
-  type        = string
-  default     = "json_to_knowledge"
-}
-
-variable "json_to_knowledge_timeout" {
-  description = "Tiempo máximo de ejecución para convert-json Lambda"
+variable "memory_size" {
+  description = "Memoria lambda"
   type        = number
-  default     = 180
+  default     = 3008
 }
 
-# URL de la base de datos Neo4j
-variable "neo4j_url" {
-  description = "URL de la base de datos Neo4j"
+
+# Tiempo de ejecución máximo para Lambdas
+variable "apigateway_name" {
+  description = "Nombre del api gateway"
   type        = string
-  default     = "your-neo4j-database-url"
+  default     = "api_rethrieve_qa"
 }

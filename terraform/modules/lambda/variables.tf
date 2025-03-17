@@ -3,7 +3,7 @@ variable "function_name" {
   type        = string
 }
 
-variable "iam_role_arn" {
+variable "role_arn" {
   description = "ARN del rol de IAM asociado con la función Lambda"
   type        = string
 }
@@ -34,5 +34,12 @@ variable "sqs_arn" {
 variable "sqs_batch_size" {
   description = "Tamaño del lote para procesar mensajes de SQS"
   type        = number
-  default     = 10
+  default     = 1
+}
+
+
+variable "memory_size" {
+  description = "Memoria lambda"
+  type        = number
+  default     = 3008
 }

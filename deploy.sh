@@ -111,5 +111,5 @@ function deploy_terraform() {
 
 
 # Ejecutar
-#upload_to_ecr
+upload_to_ecr
 deploy_terraform

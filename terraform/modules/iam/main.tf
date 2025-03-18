@@ -64,8 +64,6 @@ resource "aws_iam_role_policy_attachment" "lambda_sqs_attach" {
 }
 
 
-<<<<<<< Updated upstream
-=======
 # ✅ Allow Lambda to Retrieve Secrets from Secrets Manager
 resource "aws_iam_role_policy" "secretsmanager_access" {
   name   = "${var.role_name}_secretsmanager_access"
@@ -102,4 +100,3 @@ resource "aws_iam_role_policy" "dynamodb_access" {
     ]
   })
 }
->>>>>>> Stashed changes

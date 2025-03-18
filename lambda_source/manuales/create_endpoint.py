@@ -3,8 +3,8 @@ import boto3
 sagemaker_client = boto3.client("sagemaker", region_name="us-east-1") 
 
 model_name = "visionrag-model"
-role_arn = "arn:aws:iam::242201272670:role/SageMakerExecutionRole"
-ecr_image_uri = "242201272670.dkr.ecr.us-east-1.amazonaws.com/lambda-container-repo:manuales_dev"
+role_arn = "arn:aws:iam::911167907421:role/SageMakerExecutionRole"
+ecr_image_uri = "911167907421.dkr.ecr.us-east-1.amazonaws.com/talmaai-docker-repo-dev:manuales_dev"
 
 
 # Create the model in SageMaker

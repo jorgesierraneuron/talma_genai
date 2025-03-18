@@ -44,7 +44,7 @@ phases:
         - cat deploy_lambda.sh
         - ls -l deploy_lambda.sh
         - file deploy_lambda.sh
-        - chmod +x deploy.sh
+        - chmod +x deploy_lambda.sh
         - ./deploy_lambda.sh -dev
   post_build:
     commands:

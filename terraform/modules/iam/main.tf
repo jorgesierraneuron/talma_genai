@@ -64,3 +64,42 @@ resource "aws_iam_role_policy_attachment" "lambda_sqs_attach" {
 }
 
 
+<<<<<<< Updated upstream
+=======
+# ✅ Allow Lambda to Retrieve Secrets from Secrets Manager
+resource "aws_iam_role_policy" "secretsmanager_access" {
+  name   = "${var.role_name}_secretsmanager_access"
+  role   = aws_iam_role.lambda_role.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "secretsmanager:GetSecretValue"
+        Resource = "arn:aws:secretsmanager:${var.aws_region}:${var.aws_account_id}:secret:*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "dynamodb_access" {
+  name   = "${var.role_name}_dynamodb_access"
+  role   = aws_iam_role.lambda_role.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "dynamodb:GetItem",
+          "dynamodb:Query",
+          "dynamodb:Scan",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem"
+        ]
+        Resource = "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_id}:table/*"
+      }
+    ]
+  })
+}
+>>>>>>> Stashed changes

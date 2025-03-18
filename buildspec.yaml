@@ -14,11 +14,11 @@ phases:
       # - if [ "$BRANCH_NAME" != "deploy/lambda_backend" ]; then echo "Skipping deployment"; exit 0; fi
 
        # Install Terraform
-      - echo "Installing Terraform..."
-      - curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-      - sudo apt-add-repository --yes --update "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-      - sudo apt-get install -y terraform
-      - terraform --version  # Verify Terraform installation
+      # - echo "Installing Terraform..."
+      # - curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+      # - sudo apt-add-repository --yes --update "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+      # - sudo apt-get install -y terraform
+      # - terraform --version  # Verify Terraform installation
       
       # # Define S3 bucket and base path
       # - S3_BUCKET_NAME="talmaai-artifacts-dev"
@@ -28,7 +28,7 @@ phases:
       # # Create the target directory if it doesn't exist
       # - mkdir -p $LOCAL_DOWNLOAD_PATH
 
-      
+
 
       # # Download all required directories from S3
       # - echo "Downloading datasets_local..."

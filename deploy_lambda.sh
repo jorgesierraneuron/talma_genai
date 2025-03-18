@@ -26,10 +26,6 @@ esac
 
 echo "Entorno seleccionado: $ENV"
 
-
-
-
-
 # Configuración
 AWS_REGION="us-east-1"
 ECR_REPO_NAME="talmaai-docker-repo-${ENV}"
@@ -38,7 +34,8 @@ DOCKER_TAG_RETHRIEVE_QA_PROCESSOR="rethrieve_qa_processor_${ENV}"
 DOCKER_TAG_JSON_TO_KNOWLEDGE="json_to_knowledge_${ENV}"
 DOCKER_TAG_MANUALES="manuales_${ENV}"
 DOCKER_TAG_MANUALES_TEST="manuales_test_${ENV}"
-
+LAMBDA_FUNCTION_NAME_ENDPOINT="rethrieve-qa-endpoint"
+LAMBDA_FUNCTION_NAME_PROCESSOR="rethrieve-qa-processor"
 
 # Retrieve AWS account ID
 ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
@@ -55,33 +52,24 @@ function upload_to_ecr() {
   echo "Autenticando con ECR..."
   aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 
-  #aws ecr create-repository --repository-name lambda-container-repo --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE --region $AWS_REGION
-
-
   echo "Construyendo imagen para rethriever_qa_endpoint..."
   docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_ENDPOINT ./lambda_source/rethrieve_qa_endpoint
   docker tag $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_ENDPOINT "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_ENDPOINT"
   docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_ENDPOINT"
 
+  echo "Actualizando Lambda para rethriever_qa_endpoint..."
+  aws lambda update-function-code --function-name $LAMBDA_FUNCTION_NAME_ENDPOINT \
+    --image-uri "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_ENDPOINT"
+
   echo "Construyendo imagen para rethriever_qa_processor..."
   docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_PROCESSOR ./lambda_source/rethrieve_qa_processor
   docker tag $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_PROCESSOR "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_PROCESSOR"
-  docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_PROCESSOR"  
+  docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_PROCESSOR"
 
-
-  # echo "Construyendo imagen para json_to_knowledge..."
-  # docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE ./lambda_source/json_to_knowledge
-  # docker tag $ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE"
-  # docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE"
-
-  # echo "Construyendo imagen para manuales..."
-  # docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_MANUALES ./lambda_source/manuales
-  # docker tag $ECR_REPO_NAME:$DOCKER_TAG_MANUALES "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_MANUALES"
-  # docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_MANUALES"
-
+  echo "Actualizando Lambda para rethriever_qa_processor..."
+  aws lambda update-function-code --function-name $LAMBDA_FUNCTION_NAME_PROCESSOR \
+    --image-uri "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_PROCESSOR"
 }
-
-
 
 # 2. Desplegar Terraform
 function deploy_terraform() {
@@ -108,7 +96,6 @@ function deploy_terraform() {
 
   cd - || { echo "Error: No se pudo volver al directorio anterior"; exit 1; }
 }
-
 
 # Ejecutar
 upload_to_ecr

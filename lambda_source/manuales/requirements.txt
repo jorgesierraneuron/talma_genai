@@ -5,8 +5,8 @@ qdrant-client
 transformers>=4.45.0 
 stamina 
 rich
-numpy==1.24.4
-pandas==2.0.3
+numpy #==1.24.4
+pandas #==2.0.3
 pdf2image 
 datasets
 qdrant-client

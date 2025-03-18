@@ -13,20 +13,21 @@ from qdrant_client.models import Filter, FieldCondition, MatchValue, SearchParam
 #from transformers import ColPali, ColPaliProcessor
 import base64
 from openai import OpenAI
+from secrets_manager import SecretManager
 
-from app.secrets import openai_api_key, open_ai_model, qdrant_key, qdrant_url
+secret = SecretManager("talma_project_creds", "us-east-1")
 
 class ChainManuales: 
 
     
 
     llm = ChatOpenAI(
-    model=open_ai_model,
+    model=secret.open_ai_model,
     temperature=0,
     max_tokens=None,
     timeout=None,
     max_retries=2,
-    api_key=openai_api_key
+    api_key=secret.openai_api_key
     )
 
     prompt_manuales = ChatPromptTemplate.from_messages(
@@ -69,13 +70,13 @@ class ChainManuales:
 
 class VisionRAG: 
 
-    openai_client = OpenAI(api_key=openai_api_key)
+    openai_client = OpenAI(api_key=secret.openai_api_key)
 
     chain_manuales = ChainManuales()
 
     qdrant_client = QdrantClient(
-    url=qdrant_url,
-    api_key=qdrant_key,
+    url=secret.qdrant_url,
+    api_key=secret.qdrant_key,
     )
 
     # # Initialize ColPali model and processor

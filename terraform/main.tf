@@ -5,48 +5,51 @@ provider "aws" {
 
 # IAM Role for Lambda
 module "iam" {
-  source    = "./modules/iam"
-  role_name =  var.lambda_role_name
+  source         = "./modules/iam"
+  role_name      = var.lambda_role_name
   aws_account_id = var.aws_account_id
-  aws_region = var.aws_region
+  aws_region     = var.aws_region
 }
 
-# SQS Queue
-resource "aws_sqs_queue" "lambda_sqs" {
-  name                       = var.sqs_queue_name
-  delay_seconds              = 0
-  message_retention_seconds  = 86400  
-  visibility_timeout_seconds = 5400   
-  max_message_size           = 262144
-  receive_wait_time_seconds  = 5
+# ✅ SNS Topic instead of SQS
+resource "aws_sns_topic" "lambda_sns" {
+  name = var.sns_topic_name
 }
 
 # Lambda Function: Rethrieve QA Endpoint
 module "lambda_rethrieve_qa_endpoint" {
   source        = "./modules/lambda"
   function_name = var.rethrieve_qa_endpoint_name
-  role_arn  = module.iam.lambda_role_arn
+  role_arn      = module.iam.lambda_role_arn
   image_uri     = "${var.ecr_repository_url}-${var.environment}:rethrieve_qa_endpoint_${var.environment}"
   timeout       = var.lambda_timeout
-  memory_size = var.memory_size
+  memory_size   = var.memory_size
 }
 
 # Lambda Function: Rethrieve QA Processor
 module "lambda_rethrieve_qa_processor" {
   source        = "./modules/lambda"
   function_name = var.rethrieve_qa_processor_name
-  role_arn  = module.iam.lambda_role_arn
+  role_arn      = module.iam.lambda_role_arn
   image_uri     = "${var.ecr_repository_url}-${var.environment}:rethrieve_qa_processor_${var.environment}"
   timeout       = var.lambda_timeout
-  memory_size = var.memory_size
+  memory_size   = var.memory_size
 }
 
-# Lambda SQS Event Source Mapping 
-resource "aws_lambda_event_source_mapping" "sqs_trigger" {
-  event_source_arn = aws_sqs_queue.lambda_sqs.arn
-  function_name    = module.lambda_rethrieve_qa_processor.function_name
-  batch_size       = 1  # Ensures one Lambda execution per message
-  enabled          = true
+# ✅ SNS Subscription for Lambda
+resource "aws_sns_topic_subscription" "lambda_subscription" {
+  topic_arn = aws_sns_topic.lambda_sns.arn
+  protocol  = "lambda"
+  endpoint  = module.lambda_rethrieve_qa_processor.lambda_function_arn
+  depends_on = [aws_lambda_permission.sns_lambda]
+}
+
+# ✅ Lambda Permission for SNS
+resource "aws_lambda_permission" "sns_lambda" {
+  action        = "lambda:InvokeFunction"
+  function_name = module.lambda_rethrieve_qa_processor.function_name
+  principal     = "sns.amazonaws.com"
+  source_arn    = aws_sns_topic.lambda_sns.arn
 }
 
 # API Gateway (HTTP API)

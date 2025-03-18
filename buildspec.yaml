@@ -41,11 +41,11 @@ phases:
   build:
     commands:
         - echo "Debugging deploy.sh execution..."
-        - cat deploy.sh
-        - ls -l deploy.sh
-        - file deploy.sh
+        - cat deploy_lambda.sh
+        - ls -l deploy_lambda.sh
+        - file deploy_lambda.sh
         - chmod +x deploy.sh
-        - ./deploy.sh -dev
+        - ./deploy_lambda.sh -dev
   post_build:
     commands:
       - echo "Deployment completed successfully."

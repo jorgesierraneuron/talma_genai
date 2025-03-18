@@ -7,3 +7,8 @@ output "invoke_arn" {
   description = "The ARN to invoke the Lambda function"
   value       = aws_lambda_function.lambda.invoke_arn
 }
+
+output "lambda_function_arn" {
+  description = "The full ARN of the Lambda function"
+  value       = aws_lambda_function.lambda.arn
+}

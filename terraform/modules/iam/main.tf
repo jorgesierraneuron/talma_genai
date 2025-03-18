@@ -49,7 +49,8 @@ resource "aws_iam_policy" "lambda_sqs_policy" {
         Action   = [
           "sqs:ReceiveMessage",
           "sqs:DeleteMessage",
-          "sqs:GetQueueAttributes"
+          "sqs:GetQueueAttributes",
+          "sqs:PutItem"
         ],
         Resource = "arn:aws:sqs:${var.aws_region}:${var.aws_account_id}:${var.sqs_queue_name}"
       }

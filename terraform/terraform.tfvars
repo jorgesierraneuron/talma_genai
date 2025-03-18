@@ -8,7 +8,7 @@ environment = "dev"
 lambda_role_name = "lambda-execution-role"
 
 # SQS Queue
-sqs_queue_name = "rethrieve_qa_sqs"
+sns_topic_name = "rethieve_qa"
 
 # Lambda Function Names
 rethrieve_qa_endpoint_name   = "rethrieve-qa-endpoint"

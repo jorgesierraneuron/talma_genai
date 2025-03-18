@@ -34,10 +34,10 @@ variable "lambda_role_name" {
 }
 
 # Configuración de SQS
-variable "sqs_queue_name" {
+variable "sns_topic_name" {
   description = "Nombre de la cola SQS que desencadena Lambda"
   type        = string
-  default     = "lambda-sqs-queue"
+  default     = "rethrieve_qa"
 }
 
 # Configuración de Lambda Rethrieve QA Endpoint

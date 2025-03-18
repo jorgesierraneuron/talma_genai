@@ -8,20 +8,13 @@ phases:
       - echo "Current branch: $BRANCH_NAME"
 
       # Only deploy if the branch is "deploy/manuales"
-      - |
-        if [ "$BRANCH_NAME" != "deploy/manuales" ]; then 
-          echo "Skipping deployment"; 
-          exit 0; 
-        fi
-      
+      - if [[ "$BRANCH_NAME" != "deploy/manuales" ]]; then echo "Skipping deployment"; exit 0; fi
+
       - echo "Setting up the environment..."
-      - export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+      - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
       
-      # Define variables in one command (YAML requires commands to be strings)
-      - |
-        export S3_BUCKET_NAME="talma-artifacts"
-        export S3_DOWNLOAD_PATH="lambda_source_files/app"
-        export LOCAL_DOWNLOAD_PATH="./lambda_source/manuales/app"
+      # Define and export variables in a single command (to avoid YAML errors)
+      - export S3_BUCKET_NAME="talma-artifacts" S3_DOWNLOAD_PATH="lambda_source_files/app" LOCAL_DOWNLOAD_PATH="./lambda_source/manuales/app"
 
       # Create the target directory
       - mkdir -p "$LOCAL_DOWNLOAD_PATH"

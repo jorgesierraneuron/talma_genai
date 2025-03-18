@@ -3,6 +3,14 @@ version: 0.2
 phases:
   pre_build:
     commands:
+      - echo "Checking branch..."
+      - BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+      - echo "Current branch: $BRANCH_NAME"
+
+      # Only deploy if the branch is "main" (change as needed)
+      - if [ "$BRANCH_NAME" != "deploy/manuales" ]; then echo "Skipping deployment"; exit 0; fi
+      
+      
       - echo "Setting up the environment..."
       - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
       

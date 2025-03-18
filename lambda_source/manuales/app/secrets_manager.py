@@ -4,7 +4,8 @@ import base64
 class SecretManager:
 
     def __init__(self, secret_name, region_name):
-        talma_creds = self.get_secret(secret_name,region_name)
+        
+        talma_creds = self.__get_secret(secret_name,region_name)
         talma_creds = eval(talma_creds)
         # --- Creds NEO4J ---#
 
@@ -28,8 +29,8 @@ class SecretManager:
         self.qdrant_key = talma_creds["qdrant_key"]
         self.qdrant_url = talma_creds["qdrant_url"]
 
-
-    def get_secret(secret_name, region_name):
+    @staticmethod
+    def __get_secret(secret_name, region_name):
         '''
             Obtiene un secreto en base al nombre (o el arn) y la region 
 
@@ -54,7 +55,7 @@ class SecretManager:
 
         return secret
 
-#-- Obtencion Credenciales ---#
+
 
 
 

@@ -9,6 +9,8 @@ module "iam" {
   role_name      = var.lambda_role_name
   aws_account_id = var.aws_account_id
   aws_region     = var.aws_region
+  environment    = var.environment
+  lambda_function_name = var.rethrieve_qa_endpoint_name
 }
 
 # ✅ SNS Topic instead of SQS

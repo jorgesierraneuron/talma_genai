@@ -1,20 +1,33 @@
 variable "aws_region" {
-  description = "Region AWS"
+  description = "AWS Region"
   type        = string
 }
 
 variable "aws_account_id" {
-  description = "Region AWS"
+  description = "AWS Account ID"
   type        = string
 }
 
 variable "role_name" {
-  description = "Nombre del rol de IAM para Lambda"
+  description = "IAM role name for Lambda"
   type        = string
 }
 
-variable "sqs_queue_name" {
-  description = "Nombre de la cola SQS que desencadena Lambda"
+# ✅ SNS Topic Name (Replaced SQS)
+variable "sns_topic_name" {
+  description = "Name of the SNS topic that triggers Lambda"
   type        = string
-  default     = "rethrieve_qa_sqs"
+  default     = "rethrieve_qa"
+}
+
+# ✅ Lambda Function Name
+variable "lambda_function_name" {
+  description = "The base name of the Lambda function"
+  type        = string
+}
+
+# ✅ Environment (e.g., dev, prod, staging)
+variable "environment" {
+  description = "Deployment environment"
+  type        = string
 }

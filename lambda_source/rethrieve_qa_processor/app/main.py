@@ -10,7 +10,7 @@ def handler(event, context = ""):
 
     message = json.loads(event['Records'][0]['Sns']['Message'])
 
-    dynamo_manager = DynamoDBManager("generation_talma_genai")
+    dynamo_manager = DynamoDBManager("talmaai-incidentes-dev")
     id_generation = message.get("id_generation")
 
     item = dynamo_manager.retrieve_item(id_generation)

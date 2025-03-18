@@ -6,12 +6,12 @@ phases:
       - echo "Setting up the environment..."
       - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
 
-      - echo "Checking branch..."
-      - BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-      - echo "Current branch: $BRANCH_NAME"
+      # - echo "Checking branch..."
+      # - BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+      # - echo "Current branch: $BRANCH_NAME"
 
-      # Only deploy if the branch is "main" (change as needed)
-      - if [ "$BRANCH_NAME" != "deploy/lambda_backend" ]; then echo "Skipping deployment"; exit 0; fi
+      # # Only deploy if the branch is "main" (change as needed)
+      # - if [ "$BRANCH_NAME" != "deploy/lambda_backend" ]; then echo "Skipping deployment"; exit 0; fi
 
        # Install Terraform
       - echo "Installing Terraform..."

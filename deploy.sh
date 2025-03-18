@@ -75,7 +75,8 @@ function upload_to_ecr() {
   # docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE"
 
   echo "Construyendo imagen para manuales..."
-  docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_MANUALES ./lambda_source/manuales
+  #docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_MANUALES ./lambda_source/manuales
+  docker build --platform linux/amd64 --no-cache -t $ECR_REPO_NAME:$DOCKER_TAG_MANUALES ./lambda_source/manuales
   docker tag $ECR_REPO_NAME:$DOCKER_TAG_MANUALES "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_MANUALES"
   docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_MANUALES"
 

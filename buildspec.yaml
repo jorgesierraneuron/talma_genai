@@ -5,6 +5,13 @@ phases:
     commands:
       - echo "Setting up the environment..."
       - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+
+       # Install Terraform
+      - echo "Installing Terraform..."
+      - curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+      - sudo apt-add-repository --yes --update "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+      - sudo apt-get install -y terraform
+      - terraform --version  # Verify Terraform installation
       
       # # Define S3 bucket and base path
       # - S3_BUCKET_NAME="talmaai-artifacts-dev"

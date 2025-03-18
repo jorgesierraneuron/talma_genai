@@ -3,36 +3,49 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo "Checking branch..."
-      - BRANCH_NAME=$(echo $CODEBUILD_SOURCE_VERSION | sed 's|^refs/heads/||')
-      - echo "Current branch: $BRANCH_NAME"
-
-      # Only deploy if the branch is "deploy/manuales"
-      - if [[ "$BRANCH_NAME" != "deploy/manuales" ]]; then echo "Skipping deployment"; exit 0; fi
-
       - echo "Setting up the environment..."
       - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+
+      # - echo "Checking branch..."
+      # - BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+      # - echo "Current branch: $BRANCH_NAME"
+
+      # # Only deploy if the branch is "main" (change as needed)
+      # - if [ "$BRANCH_NAME" != "deploy/lambda_backend" ]; then echo "Skipping deployment"; exit 0; fi
+
+       # Install Terraform
+      # - echo "Installing Terraform..."
+      # - curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+      # - sudo apt-add-repository --yes --update "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+      # - sudo apt-get install -y terraform
+      # - terraform --version  # Verify Terraform installation
       
-      # Define and export variables in a single command (to avoid YAML errors)
-      - export S3_BUCKET_NAME="talma-artifacts" S3_DOWNLOAD_PATH="lambda_source_files/app" LOCAL_DOWNLOAD_PATH="./lambda_source/manuales/app"
+      # Define S3 bucket and base path
+      - S3_BUCKET_NAME="talmaai-artifacts-dev"
+      - S3_DOWNLOAD_PATH="lambda_source_files/app"
+      - LOCAL_DOWNLOAD_PATH="./lambda_source/manuales/app"
 
-      # Create the target directory
-      - mkdir -p "$LOCAL_DOWNLOAD_PATH"
+      # Create the target directory if it doesn't exist
+      - mkdir -p $LOCAL_DOWNLOAD_PATH
 
-      # Download required directories from S3
-      - aws s3 cp "s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/datasets_local" "$LOCAL_DOWNLOAD_PATH/datasets_local" --recursive
-      - aws s3 cp "s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/local_model" "$LOCAL_DOWNLOAD_PATH/local_model" --recursive
-      - aws s3 cp "s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/local_processor" "$LOCAL_DOWNLOAD_PATH/local_processor" --recursive
+
+
+      # Download all required directories from S3
+      - echo "Downloading datasets_local..."
+      - aws s3 cp s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/datasets_local $LOCAL_DOWNLOAD_PATH/datasets_local --recursive
+      - echo "Downloading local_model..."
+      - aws s3 cp s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/local_model $LOCAL_DOWNLOAD_PATH/local_model --recursive
+      - echo "Downloading local_processor..."
+      - aws s3 cp s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/local_processor $LOCAL_DOWNLOAD_PATH/local_processor --recursive
 
   build:
     commands:
-      - echo "Debugging deploy.sh execution..."
-      - cat deploy.sh
-      - ls -l deploy.sh
-      - file deploy.sh
-      - chmod +x deploy.sh
-      - ./deploy.sh -dev
-
+        - echo "Debugging deploy.sh execution..."
+        - cat deploy.sh
+        - ls -l deploy.sh
+        - file deploy.sh
+        - chmod +x deploy.sh
+        - ./deploy.sh -dev
   post_build:
     commands:
       - echo "Deployment completed successfully."

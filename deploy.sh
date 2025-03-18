@@ -58,15 +58,15 @@ function upload_to_ecr() {
   #aws ecr create-repository --repository-name lambda-container-repo --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE --region $AWS_REGION
 
 
-  echo "Construyendo imagen para rethriever_qa_endpoint..."
-  docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_ENDPOINT ./lambda_source/rethrieve_qa_endpoint
-  docker tag $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_ENDPOINT "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_ENDPOINT"
-  docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_ENDPOINT"
+  # echo "Construyendo imagen para rethriever_qa_endpoint..."
+  # docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_ENDPOINT ./lambda_source/rethrieve_qa_endpoint
+  # docker tag $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_ENDPOINT "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_ENDPOINT"
+  # docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_ENDPOINT"
 
-  echo "Construyendo imagen para rethriever_qa_processor..."
-  docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_PROCESSOR ./lambda_source/rethrieve_qa_processor
-  docker tag $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_PROCESSOR "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_PROCESSOR"
-  docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_PROCESSOR"  
+  # echo "Construyendo imagen para rethriever_qa_processor..."
+  # docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_PROCESSOR ./lambda_source/rethrieve_qa_processor
+  # docker tag $ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_PROCESSOR "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_PROCESSOR"
+  # docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_RETHRIEVE_QA_PROCESSOR"  
 
 
   # echo "Construyendo imagen para json_to_knowledge..."
@@ -74,10 +74,10 @@ function upload_to_ecr() {
   # docker tag $ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE"
   # docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_JSON_TO_KNOWLEDGE"
 
-  # echo "Construyendo imagen para manuales..."
-  # docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_MANUALES ./lambda_source/manuales
-  # docker tag $ECR_REPO_NAME:$DOCKER_TAG_MANUALES "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_MANUALES"
-  # docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_MANUALES"
+  echo "Construyendo imagen para manuales..."
+  docker build --platform linux/amd64 -t $ECR_REPO_NAME:$DOCKER_TAG_MANUALES ./lambda_source/manuales
+  docker tag $ECR_REPO_NAME:$DOCKER_TAG_MANUALES "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_MANUALES"
+  docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPO_NAME:$DOCKER_TAG_MANUALES"
 
 }
 
@@ -112,4 +112,4 @@ function deploy_terraform() {
 
 # Ejecutar
 upload_to_ecr
-deploy_terraform
+#deploy_terraform

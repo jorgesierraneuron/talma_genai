@@ -8,7 +8,7 @@ from dynamomanager import DynamoDBManager
 from utils import send_sns_message
 app = FastAPI()
 
-dynamo_manager=DynamoDBManager("generation_talma_genai")
+dynamo_manager=DynamoDBManager("talmaai-incidentes-dev")
 
 app.add_middleware(
     CORSMiddleware,

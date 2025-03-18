@@ -15,6 +15,8 @@ def handler(event, context = ""):
 
     item = dynamo_manager.retrieve_item(id_generation)
 
+    print(item)
+
     # Update Status
 
     item["status"] = "running"

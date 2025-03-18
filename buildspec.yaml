@@ -28,6 +28,8 @@ phases:
       # # Create the target directory if it doesn't exist
       # - mkdir -p $LOCAL_DOWNLOAD_PATH
 
+      
+
       # # Download all required directories from S3
       # - echo "Downloading datasets_local..."
       # - aws s3 cp s3://$S3_BUCKET_NAME/$S3_DOWNLOAD_PATH/datasets_local $LOCAL_DOWNLOAD_PATH/datasets_local --recursive

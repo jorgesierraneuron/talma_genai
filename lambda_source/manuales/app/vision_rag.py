@@ -13,7 +13,7 @@ from qdrant_client.models import Filter, FieldCondition, MatchValue, SearchParam
 #from transformers import ColPali, ColPaliProcessor
 import base64
 from openai import OpenAI
-from config import qdrant_key,qdrant_url,openai_api_key
+from config import qdrant_key,qdrant_url,openai_api_key, open_ai_model
 import logging
 import io
 
@@ -25,7 +25,7 @@ class ChainManuales:
     
 
     llm = ChatOpenAI(
-    model=secret.open_ai_model,
+    model=open_ai_model,
     temperature=0,
     max_tokens=None,
     timeout=None,

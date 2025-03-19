@@ -40,6 +40,7 @@ neo4j_url = talma_creds["neo4j_url"]
 # --- Creds Api OpenAi ---#
 
 openai_api_key = talma_creds["openai_api_key"]
+open_ai_model = talma_creds["open_ai_model"]
 
 # --- Parámetros Nodos ---#
 

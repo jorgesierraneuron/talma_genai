@@ -13,7 +13,7 @@ from qdrant_client.models import Filter, FieldCondition, MatchValue, SearchParam
 #from transformers import ColPali, ColPaliProcessor
 import base64
 from openai import OpenAI
-from config import qdrant_key,qdrant_url,openai_api_key, open_ai_model
+from config import qdrant_key,qdrant_url,openai_api_key, open_ai_model, qdrant_collection_name
 import logging
 import io
 
@@ -275,7 +275,7 @@ class VisionRAG:
 
         #idx, manual_name = self.__search_qdrant(query_manual, "manuales_talma_dev",manual_name_ia)
 
-        idx, manual_name = self.__search_qdrant(query_manual, "manuales_talma_dev",manual_name_ia)
+        idx, manual_name = self.__search_qdrant(query_manual, qdrant_collection_name,manual_name_ia)
         
         logging.info(f"Manual name: {manual_name}")
 

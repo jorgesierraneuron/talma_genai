@@ -51,3 +51,4 @@ text_node_property = "descripcion_hallazgo"
 
 qdrant_url=talma_creds["qdrant_url"]
 qdrant_key=talma_creds["qdrant_key"]
+qdrant_collection_name=talma_creds["collection_name"]

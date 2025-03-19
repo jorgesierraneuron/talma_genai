@@ -3,8 +3,8 @@ import requests
 import time
 import re
 
-API_URL_CREATE = "https://qsdwrr8keh.execute-api.us-east-1.amazonaws.com/dev/similarity_search"  
-API_URL_GET = "https://qsdwrr8keh.execute-api.us-east-1.amazonaws.com/dev/get_result"  
+API_URL_CREATE = st.secrets["API_URL_CREATE"]
+API_URL_GET = st.secrets["API_URL_GET"]  
 
 st.markdown("<h1 style='text-align: center;'>🤖 Chatbot Talma Reportes De Quejas</h1>", unsafe_allow_html=True)
 

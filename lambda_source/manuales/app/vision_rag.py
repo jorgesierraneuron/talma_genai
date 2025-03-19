@@ -13,9 +13,12 @@ from qdrant_client.models import Filter, FieldCondition, MatchValue, SearchParam
 #from transformers import ColPali, ColPaliProcessor
 import base64
 from openai import OpenAI
-from secrets_manager import SecretManager
+from config import qdrant_key,qdrant_url,openai_api_key
+import logging
+import io
 
-secret = SecretManager("talma_project_creds", "us-east-1")
+
+logging.basicConfig(level=logging.INFO)
 
 class ChainManuales: 
 
@@ -27,7 +30,7 @@ class ChainManuales:
     max_tokens=None,
     timeout=None,
     max_retries=2,
-    api_key=secret.openai_api_key
+    api_key=openai_api_key
     )
 
     prompt_manuales = ChatPromptTemplate.from_messages(
@@ -49,13 +52,33 @@ class ChainManuales:
     [
         (
             "system",
-            """Eres un operario experto en mmanuales de operación aeroportuarios, debes convertir la descripcion del evento a un texto del manual de operacion, un resumen, incluye palabras clave para una mejor 
-            busqueda en el manual siempre basado en la descripicion del evento
+            """Eres un experto en manuales de operación aeroportuarios. Convierte la descripción del evento en una entrada de manual clara y precisa (máx. 300 caracteres). 
+            Incluye un resumen estructurado y palabras clave relevantes para facilitar la búsqueda, siempre basado en la descripción del evento.
 
-            GUIDELINE: NO MAS DE 300 CARACTERES
+            Ejemplos: 
+            
+            1. Procedimiento para limpieza de asientos
+            - Limpieza. 
+            - pernoctas. 
+            -insumos
+
+            Para la limpieza de la aeronave se debe seguir estos pasos...
+
+            2. Procedimiento carga de aeronave. 
+            - Distribucion peso
+            - Carga
+            - Balance de carga
+
+            El procedimiento de carga se debe iniciar...
+
+            Debes generar queries de ese estilo pero profundizando en el procedimiento.
+            NO DEBES DAR INSTRUCCIONES, SOLO PALABRAS CLAVE QUE PUEDA ENCONTRAR EN EL MANUAL
+            Las palabras claves son relacionadas al procedimiento, no al evento
+
+            Escribe un parrafo de lo que puedes encontrar en el manual
             """,
         ),
-        ("human", "descripcion ddel evento: {descripcion_evento}, manual a utilizar: {manual_name}"),
+        ("human", "descripcion del evento: {descripcion_evento}, manual a utilizar: {manual_name}"),
     ]
     )
 
@@ -70,28 +93,14 @@ class ChainManuales:
 
 class VisionRAG: 
 
-    openai_client = OpenAI(api_key=secret.openai_api_key)
+    openai_client = OpenAI(api_key=openai_api_key)
 
     chain_manuales = ChainManuales()
 
     qdrant_client = QdrantClient(
-    url=secret.qdrant_url,
-    api_key=secret.qdrant_key,
+    url=qdrant_url,
+    api_key=qdrant_key,
     )
-
-    # # Initialize ColPali model and processor
-    # model_name = (
-    #     "vidore/colpali-v1.3"  # Use the latest version available
-    # )
-    # colpali_model = ColPali.from_pretrained(
-    #     model_name,
-    #     torch_dtype=torch.bfloat16,
-    #     device_map="mps",  # Use "cuda:0" for GPU, "cpu" for CPU, or "mps" for Apple Silicon
-    # )
-
-    # colpali_processor = ColPaliProcessor.from_pretrained(
-    #     "vidore/colpaligemma-3b-pt-448-base"
-    # )
 
     # Load from local paths
     colpali_model = ColPali.from_pretrained(
@@ -101,9 +110,6 @@ class VisionRAG:
     )
 
     colpali_processor = ColPaliProcessor.from_pretrained("./local_processor")
-
-
-
 
 
     df_markdown = pd.read_csv("manuales_guia.csv").to_markdown()
@@ -131,16 +137,13 @@ class VisionRAG:
             
             # Obtener la imagen en formato bytes
             image_data_bytes = dataset[index]["image"]
-            
-            # # Convertir los bytes en un objeto PIL Image
-            # image = Image.open(BytesIO(image_data_bytes))
-            
-            # # Mostrar la imagen
-            # image.show()
-            # print(f"Mostrando la imagen en el índice {index}.")
+
+            image = Image.open(io.BytesIO(image_data_bytes))
+
+            image.show()
         
         except Exception as e:
-            print(f"Error al mostrar la imagen: {e}")
+            logging.info(f"Error al mostrar la imagen: {e}")
 
         return image_data_bytes
     
@@ -182,7 +185,7 @@ class VisionRAG:
         )
         
         #self.qdrant_client.close()
-        return search_result.points[0].id
+        return search_result.points[0].id, search_result.points[0].payload.get("nombre_documento")
     
     @staticmethod
     def __bytes_to_base64(bytes_imagen): 
@@ -202,18 +205,35 @@ class VisionRAG:
 
         {descripcion_evento}
 
-        Solo debes generar el procedimiento adecuando a seguir segun la imagen. 
+        Tu deber es explicar cual es el procedimiento a seguir segun el manual de operación el cual encuentras en la iamgen
+        """
+
+        user_prompt = """
+        Con base en la imagen dame el procedimiento que debo seguir para cumplir con el procedimiento relacionado al evento que recibiste
+
+        Usa el procedimiento indicado en la imagen para describir el procedimiento adecuado
+        NO DEBES DAR DESCRIPCIONES ADICIONALES ACERCA DEL EVENTO
+        Siempre enumera los pasos y el nombre colocalo en negrita.
         """
 
         response = self.openai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {
-                    "role": "user",
+                    "role": "developer",
                     "content": [
                         {
                             "type": "text",
                             "text": text,
+                        }
+                    ],
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": user_prompt,
                         },
                         {
                             "type": "image_url",
@@ -249,12 +269,15 @@ class VisionRAG:
     def run(self, query): 
 
 
-        query_manual, manual_name = self.__get_manual_name_query_manuals(query)
+        query_manual, manual_name_ia = self.__get_manual_name_query_manuals(query)
 
-        idx = self.__search_qdrant(query_manual, "manuales_talma_dev",manual_name)
+        logging.info(f"query_manual: {query_manual}")
+
+        #idx, manual_name = self.__search_qdrant(query_manual, "manuales_talma_dev",manual_name_ia)
+
+        idx, manual_name = self.__search_qdrant(query_manual, "manuales_talma_dev",manual_name_ia)
         
-        print(f"Manual name: {manual_name}")
-
+        logging.info(f"Manual name: {manual_name}")
 
         manual_name_dataset =  re.sub(r"(REV[^.]*)\..*", r"\1", manual_name)
 
@@ -274,19 +297,55 @@ class VisionRAG:
 
 #     logging.basicConfig(level=logging.INFO)
 
-#     # Read input from environment
-#     descripcion_evento = os.getenv("DESCRIPCION_EVENTO", "No input")
+#     # # Read input from environment
+#     # descripcion_evento = os.getenv("DESCRIPCION_EVENTO", "No input")
 
-#     # Log the result (Lambda will retrieve from CloudWatch Logs)
-#     logging.info(f"Processed Event: {descripcion_evento}")
+#     # # Log the result (Lambda will retrieve from CloudWatch Logs)
+#     # logging.info(f"Processed Event: {descripcion_evento}")
     
 #     vision_rag = VisionRAG()
 
-#     # descripcion_evento = """
-#     # INCUMPLIMIENTO DE LAS SEÑALES DE LLEGADA (LINTERNAS O VARAS OPERATIVAS 2 X CADA PUNTA DE ALA Y PARQUEADOR, TOTAL 6), CONEXIÓN DE EQUIPOS (GPU) Y SEÑALES DE CONEXIÓN.
+#     descripcion_evento = """
+#     aeropuerto CTG y con el cliente WINGO.
 
-#     # AVIANCA
-#     # """
+# El 10 de enero del presente año, en el Aeropuerto Internacional Rafael Núñez de Cartagena (CTG), a las 20:36 HL, y durante el desembarque de pasajeros, se produjo un contacto entre la escalera LEA052 y la puerta 4L de la aeronave, ocasionando un daño en el panel protector de esta.
+
+# La aeronave no venía cargada adelante, lo que genera un desbalance sin tener la ventaja de peso adicional en la bodega delantera, tal como se menciona en el procedimiento
+# referenciado.
+
+# La aeronave que operaba el vuelo P57605 con destino MDE, es un B737-8 de la aerolínea P5 de matrícula HP-1714. Luego de análisis general, se logra identificar que los efectos físicos de la aeronave al desarrollar desembarque simultáneo de pasajeros, genera las siguientes afectaciones:
+
+# 1. Se evidencia que no se cuenta con información sobre el cargue del vuelo llegando a
+# CTG (LPM / LDM)
+# 2. Al inspeccionar las bodegas, se identifica que la aeronave no tiene carga en la bodega
+# delantera, la cual no genera contrapeso para garantizar el ground stability.
+# 3. Al momento en el que se descarga la bodega trasera la aeronave pierde el equilibrio del
+# ground stability aumentando la carga aerodinámica (Fuerza hacia abajo)
+# 4. Se inicia desembarque simultáneo lo que genera un movimiento del centro de presión, y
+# desarrollando un efecto Lift (Fuerza hacia arriba) en la aeronave.
+# 5. Como resultante, estas condiciones generan el Tail Tipping y por consiguiente el
+# movimiento de la aeronave que de manera directa al encontrarse acoplada la escalera
+# genera el contacto y fractura del panel protector de la puerta.
+
+
+# La escalera utilizada para la atención de la aeronave, identificada como LEA 052, se
+# encontraba en óptimas condiciones operativas, verificadas previamente a su uso en el vuelo. Además, cumple con su programa de mantenimiento preventivo y es apta para atender aeronaves del tipo B-737.
+
+# No se detectan desviaciones, reportes o fallas en el sistema de entrega de información por
+# correo electrónico que pudiera limitar la recepción de información en el día del evento.
+
+# La aeronave programada para vuelo P57605 se encontraba ubicada en la posición 7 del
+# aeropuerto internacional Rafael Núñez. Durante la atención de la aeronave se operaba con luz artificial propia de la infraestructura del aeropuerto, operación nocturna. No se encuentran condiciones de irregularidad en la plataforma pudieran contribuir al desarrollo del evento.
+
+# El líder a cargo del vuelo no contaba con la información de la ubicación del equipaje llegando por lo cual debe esperar el parqueo de la aeronave para realizar la revisión de las bodegas y luego proceder con el descargue de los equipajes.
+# En diversas ocasiones, se ha venido solicitando al cliente la información del LDM para garantizar una planificación adecuada de recursos y coreografías alineadas a considerar los
+# procedimientos de balanceo de aeronave considerados por Talma; al momento sin una confirmación formal de información para la estación CTG.
+
+# El personal involucrado en el evento cuenta con sus turnos programados cumpliendo los
+# descansos requeridos por ley, así mismo, cuenta con sus capacitaciones requeridas por la
+# aerolínea, la empresa y la autoridad para desarrollar sus funciones en la operación.
+
+#     """
 
 #     logging.info(vision_rag.run(descripcion_evento))
 

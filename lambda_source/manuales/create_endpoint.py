@@ -22,8 +22,9 @@ sagemaker_client.create_endpoint_config(
         {
             "VariantName": "AllTraffic",
             "ModelName": model_name,
-            "InstanceType": "ml.m5.large",  # Choose instance type
+            "InstanceType": "ml.c5.xlarge",  # Choose instance type
             "InitialInstanceCount": 1,
+            "ContainerStartupHealthCheckTimeoutInSeconds": 600, 
         }
     ],
 )

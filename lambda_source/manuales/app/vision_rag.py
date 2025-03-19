@@ -24,7 +24,7 @@ class ChainManuales:
     max_tokens=None,
     timeout=None,
     max_retries=2,
-    api_key="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"
+    api_key=""
     )
 
     prompt_manuales = ChatPromptTemplate.from_messages(
@@ -67,13 +67,13 @@ class ChainManuales:
 
 class VisionRAG: 
 
-    openai_client = OpenAI(api_key="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")
+    openai_client = OpenAI(api_key="")
 
     chain_manuales = ChainManuales()
 
     qdrant_client = QdrantClient(
-    url="https://c6d17ace-010d-4b2f-85bc-bd9194307ded.us-east-1-0.aws.cloud.qdrant.io",
-    api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.KuxEn1VpwuQGxkS3EKREo2dU8M2btmpzJri8GJej3sI",
+    url="",
+    api_key="",
     )
 
     # # Initialize ColPali model and processor

@@ -60,7 +60,7 @@ def similarity_search_unfiltered(request: SimilarityRequest):
                 "id_generation": request.id_generation
             }
 
-            sns_response = send_sns_message("arn:aws:sns:us-east-1:242201272670:test_rethrieve_qa", message)
+            sns_response = send_sns_message("arn:aws:sns:us-east-1:911167907421:rethieve_qa", message)
             print(sns_response)
 
             return {
